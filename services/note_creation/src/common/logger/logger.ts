@@ -1,0 +1,58 @@
+import { format } from "date-fns";
+import { injectable } from "inversify";
+import pino from "pino";
+
+import type { LoggerLabel } from "@/common/types/types/logger.types";
+import { PATHS } from "@/common/utils/constants";
+import { env } from "@/common/utils/env.config";
+
+@injectable()
+export class Logger {
+  private logger: pino.Logger;
+
+  constructor(label: LoggerLabel) {
+    const transport = env.IS_PRODUCTION
+      ? pino.transport({
+          target: "pino/file",
+          options: {
+            destination: `${PATHS.LOGS}/${format(new Date(), "yyyy-MM-dd")}.log`,
+            mkdir: true,
+          },
+        })
+      : pino.transport({
+          target: "pino-pretty",
+          options: {
+            levelFirst: true,
+            ignore: "pid,hostname",
+            translateTime: "SYS:standard",
+            singleLine: false,
+            colorize: true,
+          },
+        });
+
+    this.logger = pino(
+      {
+        level: env.IS_PRODUCTION ? "info" : "debug",
+        base: { label },
+        timestamp: pino.stdTimeFunctions.isoTime,
+      },
+      transport,
+    );
+  }
+
+  info(obj: any, msg?: string, ...args: any[]): void {
+    this.logger.info(obj, msg, ...args);
+  }
+
+  error(obj: any, msg?: string, ...args: any[]): void {
+    this.logger.error(obj, msg, ...args);
+  }
+
+  warn(obj: any, msg?: string, ...args: any[]): void {
+    this.logger.warn(obj, msg, ...args);
+  }
+
+  debug(obj: any, msg?: string, ...args: any[]): void {
+    this.logger.debug(obj, msg, ...args);
+  }
+}

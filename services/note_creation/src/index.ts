@@ -1,56 +1,35 @@
-import { env } from "@/common/utils/envConfig";
-import { app, logger } from "@/server";
+import "reflect-metadata";
 
-const server = app.listen(env.PORT, () => {
-  console.log(`Server running at http://localhost:${env.PORT}`);
-});
+import cors from "cors";
+import express from "express";
+import helmet from "helmet";
 
-const onCloseSignal = () => {
-  logger.info("sigint received, shutting down");
-  server.close(() => {
-    logger.info("server closed");
-    process.exit();
+import { container } from "@/common/cores/container";
+import { server } from "@/common/cores/server";
+import type { LoggerFactory } from "@/common/logger";
+import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
+import { env } from "@/common/utils/env.config";
+import errorHandler from "./common/middlewares/errorHandler";
+import { httpLogger } from "./common/middlewares/httpLogger";
+
+const loggerFactory = container.get<LoggerFactory>(
+  DEPENDENCY_IDENTIFIERS.LoggerFactory,
+);
+const logger = loggerFactory.createLogger("SYSTEM");
+
+server
+  .setConfig((app) => {
+    app.set("trust proxy", true);
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
+    app.use(helmet());
+    app.use(httpLogger());
+  })
+  .setErrorConfig((app) => {
+    app.use(errorHandler());
+  })
+  .build()
+  .listen(env.PORT, () => {
+    logger.info({ port: env.PORT }, "server is running");
   });
-  setTimeout(() => process.exit(1), 10000).unref(); // Force shutdown after 10s
-};
-
-process.on("SIGINT", onCloseSignal);
-process.on("SIGTERM", onCloseSignal);
-
-// let doc: Note;
-
-// const openai = new OpenAI({
-//   apiKey: env.OPENAI_API_KEY,
-//   organization: process.env.OPENAI_ORGANIZATION,
-// });
-
-// // Middleware to parse JSON bodies
-// app.use(express.json());
-
-// // Basic route
-// app.get("/", (req: Request, res: Response) => {
-//   res.send("Hello World!");
-// });
-
-// app.post("/document/title", (req: Request, res: Response) => {
-//   const { title } = req.body;
-//   doc = new Note(title as string, openai);
-//   res.send(`Document created: ${title}`);
-// });
-
-// app.post("/document/content", (req: Request, res: Response) => {
-//   const { content } = req.body;
-//   doc.addContent(content);
-//   res.send(`Document created: ${content}`);
-// });
-
-// app.get("/document", async (req: Request, res: Response) => {
-//   const a = await doc.createNote();
-//   console.log(a);
-//   res.send({ result: a });
-// });
-
-// // Start the server
-// app.listen(port, () => {
-//   console.log(`Server running at http://localhost:${port}`);
-// });
