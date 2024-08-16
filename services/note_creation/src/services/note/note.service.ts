@@ -4,6 +4,7 @@ import { inject, injectable } from "inversify";
 import type { Logger, LoggerFactory } from "@/common/logger";
 import { ServiceResponse } from "@/common/models/serviceResponse";
 import type { Note } from "@/common/types/types/db.types";
+import type { GeneratedNote } from "@/common/types/types/note.types";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
 import type { NoteRepository } from "./note.repository";
 import type { NoteEnhancerService } from "./noteEnhencer.service";
@@ -41,7 +42,9 @@ export class NoteService {
     }
   }
 
-  async getNote(note_id: string): Promise<ServiceResponse<string | null>> {
+  async getNote(
+    note_id: string,
+  ): Promise<ServiceResponse<GeneratedNote | null>> {
     try {
       const note = await this.noteRepository.getNote(note_id);
       this.logger.info(note, "Note found");
@@ -51,7 +54,12 @@ export class NoteService {
         note,
         noteContent,
       );
-      return ServiceResponse.success<string>("Note found", enhancedContent);
+
+      await this.noteRepository.createNoteResult(note_id, enhancedContent);
+      return ServiceResponse.success<GeneratedNote>(
+        "Note found",
+        enhancedContent,
+      );
     } catch (ex) {
       const errorMessage = `Error getting note: $${(ex as Error).message}`;
       this.logger.error(ex, errorMessage);
