@@ -5,6 +5,7 @@ import type {
   ContentTypesTable,
   DatabaseSchema,
   NoteContentsTable,
+  NoteResultSummaryTable,
   NoteResultsTable,
   NotesTable,
   ResultTypesTable,
@@ -29,6 +30,10 @@ export type ResultTypeUpdate = Updateable<ResultTypesTable>;
 export type NoteResult = Selectable<NoteResultsTable>;
 export type NewNoteResult = Insertable<NoteResultsTable>;
 export type NoteResultUpdate = Updateable<NoteResultsTable>;
+
+export type NoteResultSummary = Selectable<NoteResultSummaryTable>;
+export type NewNoteResultSummary = Insertable<NoteResultsTable>;
+export type NoteResultSummaryUpdate = Updateable<NoteResultsTable>;
 
 export type DatabaseConnection = Kysely<DatabaseSchema>;
 export type OpenAIClient = OpenAI;

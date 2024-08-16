@@ -23,6 +23,7 @@ export interface DatabaseSchema {
   note_contents: NoteContentsTable;
   result_types: ResultTypesTable;
   note_results: NoteResultsTable;
+  summaries: NoteResultSummaryTable;
 }
 
 export interface NotesTable {
@@ -58,7 +59,18 @@ export interface NoteResultsTable {
   note_id: string;
   result_type_id: string;
   file_url: string | null;
+  order_index: number;
+  content: string | null;
   created_at: Generated<Date>;
+  updated_at: Generated<Date>;
+}
+
+export interface NoteResultSummaryTable {
+  summary_id: Generated<string>;
+  note_id: string;
+  content: string;
+  created_at: Generated<Date>;
+  updated_at: Generated<Date>;
 }
 
 /**
