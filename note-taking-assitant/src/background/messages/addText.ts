@@ -1,7 +1,10 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
 
+import { API_URL } from "~utils/envConfig"
+
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
-  fetch("http://localhost:3000/document/content", {
+  console.log("API_URL", API_URL)
+  fetch(`${API_URL}/document/content`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
