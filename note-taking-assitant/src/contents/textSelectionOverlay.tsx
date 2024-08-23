@@ -35,11 +35,13 @@ const textSelectionOverlay = () => {
       document.removeEventListener("selectionchange", handleSelection)
     }
   }, [])
+
   const handleAddClick = () => {
     sendToBackground({ name: "addText", body: { text: selectedText } })
     setIsVisible(false)
     setSelectedText("")
   }
+
   if (!isVisible) return null
 
   return (

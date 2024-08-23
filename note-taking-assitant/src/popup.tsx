@@ -1,22 +1,22 @@
-import {
-  Box,
-  Button,
-  Input,
-  Link,
-  Stack,
-  Switch,
-  ThemeProvider,
-  Typography
-} from "@mui/material"
-import { useState } from "react"
+import { Box, ThemeProvider } from "@mui/material"
+
+import { sendToBackground } from "@plasmohq/messaging"
+import { Storage } from "@plasmohq/storage"
+import { useStorage } from "@plasmohq/storage/hook"
 
 import Footer from "~popup/Footer"
 import Header from "~popup/Header"
 import Main from "~popup/Main"
 import { popup } from "~styles/constant"
 import theme from "~styles/theme"
+import { API_URL } from "~utils/envConfig"
 
 function IndexPopup() {
+  const [permission] = useStorage({
+    key: "permission",
+    instance: new Storage({ area: "local" })
+  })
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -26,14 +26,28 @@ function IndexPopup() {
           bgcolor: "background.default",
           color: "text.primary"
         }}>
-        <Header onPause={() => {}} onResume={() => {}} started={false} />
+        <Header
+          onPause={() => {
+            sendToBackground({
+              name: "setPermission",
+              body: { permission: false }
+            })
+          }}
+          onResume={() => {
+            sendToBackground({
+              name: "setPermission",
+              body: { permission: true }
+            })
+          }}
+          started={permission}
+        />
         <Main
           created={false}
           onAddThought={(idea) => {
             console.log("idea", idea)
           }}
           onCreate={(title) => {
-            fetch("http://localhost:3000/document/title", {
+            fetch(`${API_URL}/note`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json"
@@ -42,7 +56,7 @@ function IndexPopup() {
             })
           }}
           onView={() => {
-            fetch("http://localhost:3000/document", {
+            fetch(`${API_URL}/document`, {
               method: "GET",
               headers: {
                 "Content-Type": "application/json"

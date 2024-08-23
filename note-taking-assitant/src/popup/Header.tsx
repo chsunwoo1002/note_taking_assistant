@@ -20,7 +20,10 @@ const Header: React.FC<HeaderProps> = ({
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           MosaicNote
         </Typography>
-        <IconButton color="inherit" aria-label="settings">
+        <IconButton
+          color="inherit"
+          aria-label="settings"
+          onClick={started ? onPause : onResume}>
           {started ? <PauseRoundedIcon /> : <PlayArrowRoundedIcon />}
         </IconButton>
         <IconButton color="inherit" aria-label="settings">
