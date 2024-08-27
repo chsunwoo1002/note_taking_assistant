@@ -20,7 +20,7 @@ import {
 } from "@/common/utils/httpHandlers";
 import type { NoteService } from "@/services/note/note.service";
 
-@controller("/notes")
+@controller("/note")
 export class NoteController implements interfaces.Controller {
   private readonly logger: Logger;
   constructor(
@@ -35,7 +35,8 @@ export class NoteController implements interfaces.Controller {
   @httpPost("/", validateRequest(notePostRequestSchema))
   async createNote(req: Request, res: Response) {
     const title = req.body.title as string;
-    const serviceResponse = await this.noteService.createNote(title);
+    const content = req.body.content as string | null;
+    const serviceResponse = await this.noteService.createNote(title, content);
     this.logger.info(
       { serviceResponse, url: req.url },
       "sending service response",
@@ -43,10 +44,10 @@ export class NoteController implements interfaces.Controller {
     return handleServiceResponse(serviceResponse, res);
   }
 
-  @httpGet("/:note_id", validateRequest(noteGetRequestSchema))
+  @httpGet("/:noteId", validateRequest(noteGetRequestSchema))
   async getNote(req: Request, res: Response) {
-    const note_id = req.params.note_id as string;
-    const serviceResponse = await this.noteService.getNote(note_id);
+    const noteId = req.params.noteId as string;
+    const serviceResponse = await this.noteService.getNote(noteId);
     this.logger.info(
       { serviceResponse, url: req.url },
       "sending service response",
@@ -54,20 +55,37 @@ export class NoteController implements interfaces.Controller {
     return handleServiceResponse(serviceResponse, res);
   }
 
-  @httpPost("/:note_id", validateRequest(noteContentPostRequestSchema))
+  @httpPost("/:noteId", validateRequest(noteContentPostRequestSchema))
   async createNoteContent(req: Request, res: Response) {
-    const note_id = req.params.id as string;
+    const noteId = req.params.noteId as string;
     const content = req.body.content as string;
-    const content_type = req.body.content_type as string;
+    const contentType = req.body.contentType as string;
+    console.log(contentType);
+    console.log(content);
+    console.log(noteId);
     const serviceResponse = await this.noteService.addNoteContent(
-      note_id,
-      content_type,
+      noteId,
+      contentType,
       content,
     );
     this.logger.info(
       { serviceResponse, url: req.url },
       "sending service response",
     );
+    return handleServiceResponse(serviceResponse, res);
+  }
+
+  @httpGet("/list/all")
+  async getNotes(req: Request, res: Response) {
+    const serviceResponse = await this.noteService.getNotes();
+    return handleServiceResponse(serviceResponse, res);
+  }
+
+  @httpGet("/result/:note_id")
+  async getNoteResult(req: Request, res: Response) {
+    const note_id = req.params.note_id as string;
+    const serviceResponse = await this.noteService.getNoteResult(note_id);
+
     return handleServiceResponse(serviceResponse, res);
   }
 }

@@ -25,9 +25,12 @@ export class NoteService {
   }
 
   // Retrieves all users from the database
-  async createNote(title: string): Promise<ServiceResponse<Note | null>> {
+  async createNote(
+    title: string,
+    instruction: string | null,
+  ): Promise<ServiceResponse<Note | null>> {
     try {
-      const note = await this.noteRepository.createNote(title);
+      const note = await this.noteRepository.createNote(title, instruction);
       this.logger.info(note, "Note created");
 
       return ServiceResponse.success<Note>("Note created", note);
@@ -83,12 +86,42 @@ export class NoteService {
       this.logger.info({ note_id, content_type_id, content }, "content added");
 
       return ServiceResponse.success<null>("Note updated", null);
-      // TODO: store it in the database
     } catch (ex) {
-      const errorMessage = `Error adding content to note: $${(ex as Error).message}`;
+      const errorMessage = `Error adding content to note: $${
+        (ex as Error).message
+      }`;
       this.logger.error(ex, errorMessage);
       return ServiceResponse.failure(
         "An error occurred while adding content to note.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getNotes(): Promise<ServiceResponse<Note[] | null>> {
+    try {
+      const notes = await this.noteRepository.getNotes();
+      return ServiceResponse.success<Note[]>("Notes found", notes);
+    } catch (ex) {
+      this.logger.error(ex, "Error getting notes");
+      return ServiceResponse.failure(
+        "An error occurred while getting notes.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getNoteResult(note_id: string): Promise<ServiceResponse<any | null>> {
+    try {
+      const noteResult = await this.noteRepository.getNoteResult(note_id);
+      this.logger.info(noteResult[0], "Note result found");
+      return ServiceResponse.success("Note result found", noteResult);
+    } catch (ex) {
+      this.logger.error(ex, "Error getting note result");
+      return ServiceResponse.failure(
+        "An error occurred while getting note result.",
         null,
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
