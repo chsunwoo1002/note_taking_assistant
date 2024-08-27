@@ -3,22 +3,20 @@ import React from "react"
 
 interface MainProps {
   created: boolean
-  onCreate: (title: string) => void
+  onCreate: (title: string, instruction: string) => void
   onAddThought: (idea: string) => void
-  onView: () => void
 }
 
 const Main: React.FC<MainProps> = ({
   created,
   onCreate,
-  onAddThought,
-  onView
+  onAddThought
 }: MainProps) => {
   const [title, setTitle] = React.useState("")
   const [idea, setIdea] = React.useState("")
-
+  const [instruction, setInstruction] = React.useState("")
   const onCreateClicked = () => {
-    onCreate(title)
+    onCreate(title, instruction)
   }
 
   const onAddClicked = () => {
@@ -38,6 +36,15 @@ const Main: React.FC<MainProps> = ({
                 size="small"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+              />
+              <TextField
+                fullWidth
+                multiline
+                variant="outlined"
+                label="Enter instruction (optional)"
+                size="small"
+                value={instruction}
+                onChange={(e) => setInstruction(e.target.value)}
               />
               <Button
                 variant="contained"
@@ -66,13 +73,6 @@ const Main: React.FC<MainProps> = ({
               </Button>
             </>
           )}
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            onClick={onView}>
-            View
-          </Button>
         </Box>
       </Box>
     </Container>

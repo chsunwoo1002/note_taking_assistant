@@ -1,6 +1,10 @@
 import { inject, injectable } from "inversify";
 
-import type { Note, NoteContent } from "@/common/types/types/db.types";
+import type {
+  Note,
+  NoteContent,
+  NoteResult,
+} from "@/common/types/types/db.types";
 import type { DatabaseConnection } from "@/common/types/types/db.types";
 import type { GeneratedNote } from "@/common/types/types/note.types";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
@@ -12,11 +16,11 @@ export class NoteRepository {
     private readonly dbService: DatabaseConnection,
   ) {}
 
-  async createNote(title: string): Promise<Note> {
+  async createNote(title: string, instruction: string | null): Promise<Note> {
     try {
       const query = await this.dbService
         .insertInto("notes")
-        .values({ title })
+        .values({ title, instruction })
         .returningAll()
         .executeTakeFirstOrThrow();
       return query;
@@ -26,12 +30,12 @@ export class NoteRepository {
     }
   }
 
-  async getNote(note_id: string): Promise<Note> {
+  async getNote(noteId: string): Promise<Note> {
     try {
       const query = await this.dbService
         .selectFrom("notes")
         .selectAll()
-        .where("note_id", "=", note_id)
+        .where("noteId", "=", noteId)
         .executeTakeFirstOrThrow();
       return query;
     } catch (error) {
@@ -41,14 +45,14 @@ export class NoteRepository {
   }
 
   async updateNote(
-    note_id: string,
-    content_type_id: string,
+    noteId: string,
+    contentTypeId: string,
     content: string,
   ): Promise<void> {
     try {
       await this.dbService
-        .insertInto("note_contents")
-        .values({ note_id, content_type_id, content_text: content })
+        .insertInto("noteContents")
+        .values({ noteId, contentTypeId, contentText: content })
         .execute();
     } catch (error) {
       console.error(error);
@@ -56,12 +60,12 @@ export class NoteRepository {
     }
   }
 
-  async getNoteContent(note_id: string): Promise<NoteContent[]> {
+  async getNoteContent(noteId: string): Promise<NoteContent[]> {
     try {
       const query = await this.dbService
-        .selectFrom("note_contents")
+        .selectFrom("noteContents")
         .selectAll()
-        .where("note_id", "=", note_id)
+        .where("noteId", "=", noteId)
         .execute();
       return query;
     } catch (error) {
@@ -70,45 +74,84 @@ export class NoteRepository {
     }
   }
 
-  async getContentTypesIds(type_name: string): Promise<string> {
+  async getContentTypesIds(typeName: string): Promise<string> {
     try {
       const query = await this.dbService
-        .selectFrom("content_types")
-        .select("content_type_id")
-        .where("type_name", "=", type_name)
+        .selectFrom("contentTypes")
+        .select("contentTypeId")
+        .where("typeName", "=", typeName)
         .executeTakeFirstOrThrow();
-      return query.content_type_id;
+      return query.contentTypeId;
     } catch (error) {
       console.error(error);
       throw error;
     }
   }
 
-  async createNoteResult(note_id: string, result: GeneratedNote) {
+  async createNoteResult(noteId: string, result: GeneratedNote) {
     try {
       const resultTypes = await this.dbService
-        .selectFrom("result_types")
+        .selectFrom("resultTypes")
         .selectAll()
         .execute();
       console.log(resultTypes);
       const resultTypesMap = new Map<string, string>();
       resultTypes.forEach((resultType) => {
-        resultTypesMap.set(resultType.type_name, resultType.result_type_id);
+        resultTypesMap.set(resultType.typeName, resultType.resultTypeId);
       });
       const noteResultValues = result.contents.map((content, index) => ({
-        note_id,
-        result_type_id: resultTypesMap.get(content.type) || "paragraph",
+        noteId,
+        resultTypeId: resultTypesMap.get(content.type) || "paragraph",
         content: content.content,
-        order_index: index,
+        orderIndex: index,
       }));
       await this.dbService
-        .insertInto("note_results")
+        .insertInto("noteResults")
         .values(noteResultValues)
         .execute();
       await this.dbService
         .insertInto("summaries")
-        .values({ note_id, content: result.summary })
+        .values({ noteId, content: result.summary })
         .execute();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async getNotes(): Promise<Note[]> {
+    try {
+      const query = await this.dbService
+        .selectFrom("notes")
+        .selectAll()
+        .execute();
+      return query;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async getNoteResult(noteId: string): Promise<NoteResult[]> {
+    try {
+      const resultTypes = await this.dbService
+        .selectFrom("resultTypes")
+        .selectAll()
+        .execute();
+      console.log(resultTypes);
+      const resultTypesMap = new Map<string, string>();
+      resultTypes.forEach((resultType) => {
+        resultTypesMap.set(resultType.resultTypeId, resultType.typeName);
+      });
+      const query = await this.dbService
+        .selectFrom("noteResults")
+        .selectAll()
+        .where("noteId", "=", noteId)
+        .execute();
+      return query.map((result) => ({
+        ...result,
+        type: resultTypesMap.get(result.resultTypeId),
+      }));
     } catch (error) {
       console.error(error);
       throw error;

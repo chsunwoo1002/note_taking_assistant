@@ -1,5 +1,6 @@
 import { Container, type interfaces } from "inversify";
-import { Kysely, PostgresDialect } from "kysely";
+import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
+import OpenAI from "openai";
 import { Pool } from "pg";
 
 import { Logger, LoggerFactory } from "@/common/logger";
@@ -19,10 +20,9 @@ import {
 import { DATABASE_CONFIG } from "@/common/utils/constants";
 import { NoteRepository } from "@/services/note/note.repository";
 import { NoteService } from "@/services/note/note.service";
+import { NoteEnhancerService } from "@/services/note/noteEnhencer.service";
 
 import "@/services/note/note.controller";
-import { NoteEnhancerService } from "@/services/note/noteEnhencer.service";
-import OpenAI from "openai";
 
 const container = new Container();
 
@@ -38,11 +38,14 @@ container
   .bind<DatabaseConnection>(DEPENDENCY_IDENTIFIERS.Kysely)
   .toDynamicValue((context: interfaces.Context) => {
     const config = context.container.get<IDatabaseConfig>(
-      DEPENDENCY_IDENTIFIERS.DatabaseConfig,
+      DEPENDENCY_IDENTIFIERS.DatabaseConfig
     );
     const pool = new Pool(config);
     const dialect = new PostgresDialect({ pool });
-    const db: DatabaseConnection = new Kysely<DatabaseSchema>({ dialect });
+    const db: DatabaseConnection = new Kysely<DatabaseSchema>({
+      dialect,
+      plugins: [new CamelCasePlugin()],
+    });
     return db;
   });
 container
@@ -52,7 +55,7 @@ container
   .bind<OpenAIClient>(DEPENDENCY_IDENTIFIERS.OpenAIClient)
   .toDynamicValue((context: interfaces.Context) => {
     const config = context.container.get<OpenAIConfig>(
-      DEPENDENCY_IDENTIFIERS.OpenAIConfig,
+      DEPENDENCY_IDENTIFIERS.OpenAIConfig
     );
     return new OpenAI(config);
   });
