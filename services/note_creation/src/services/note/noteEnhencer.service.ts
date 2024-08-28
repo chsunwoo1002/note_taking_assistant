@@ -2,7 +2,10 @@ import { inject, injectable } from "inversify";
 import { zodResponseFormat } from "openai/helpers/zod";
 
 import type { Logger, LoggerFactory } from "@/common/logger";
-import { generatedNoteSchema } from "@/common/types/schema/note.schema";
+import {
+  generatedNoteSchema,
+  generatedSummarySchema,
+} from "@/common/types/schema/note.schema";
 import type {
   Note,
   NoteContent,
@@ -31,7 +34,7 @@ export class NoteEnhancerService {
     Title: ${note.title}
 
     Content:
-    ${contents.map((content, idx) => `${idx + 1}. ${content.content_text}`).join("\n\n")}
+    ${contents.map((content, idx) => `${idx + 1}. ${content.contentText}`).join("\n\n")}
 
     Based on the above title and content, please create a well-structured document. The document should:
     1. Start with an introduction that explains the main topic.
@@ -70,5 +73,52 @@ export class NoteEnhancerService {
       throw new Error("generated content is null");
     }
     return generatedContent;
+  }
+
+  async getNoteSummary(note: Note, contents: NoteContent[]): Promise<string> {
+    const prompt = `
+    Title: ${note.title}
+  
+    Content:
+    ${contents.map((content, idx) => `${idx + 1}. ${content.contentText}`).join("\n\n")}
+  
+    Based on the above title and content, please create a concise summary. The summary should:
+    1. Be approximately 150-200 words long.
+    2. Capture the main ideas and key points from the content.
+    3. Maintain a coherent flow and be easy to understand.
+    4. Highlight any important concepts, findings, or conclusions.
+    5. Be written in a neutral, informative tone.
+    6. Not introduce any new information not present in the original content.
+    7. Begin with a brief introduction of the topic based on the title.
+    8. End with a concluding sentence that encapsulates the overall message.
+  
+    Please provide the summary in a clear, well-structured paragraph format.
+    `;
+
+    const response = await this.openAIClient.beta.chat.completions.parse({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are an expert writer and organizer, tasked with creating well-structured documents from user-provided content.",
+        },
+        { role: "user", content: prompt },
+      ],
+      response_format: zodResponseFormat(generatedSummarySchema, "document"),
+    });
+    const generatedContent = response.choices[0].message.parsed;
+    this.logger.info(
+      {
+        promptTokens: response.usage?.prompt_tokens,
+        completionTokens: response.usage?.completion_tokens,
+        totalTokens: response.usage?.total_tokens,
+      },
+      "final content generated",
+    );
+    if (!generatedContent || !generatedContent.summary) {
+      throw new Error("generated content is null");
+    }
+    return generatedContent.summary;
   }
 }

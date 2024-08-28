@@ -3,8 +3,11 @@ import { inject, injectable } from "inversify";
 
 import type { Logger, LoggerFactory } from "@/common/logger";
 import { ServiceResponse } from "@/common/models/serviceResponse";
-import type { Note } from "@/common/types/types/db.types";
-import type { GeneratedNote } from "@/common/types/types/note.types";
+import type {
+  Note,
+  NoteContent,
+  NoteResultSummary,
+} from "@/common/types/types/db.types";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
 import type { NoteRepository } from "./note.repository";
 import type { NoteEnhancerService } from "./noteEnhencer.service";
@@ -45,23 +48,64 @@ export class NoteService {
     }
   }
 
-  async getNote(
-    note_id: string,
-  ): Promise<ServiceResponse<GeneratedNote | null>> {
+  async getNote(noteId: string): Promise<ServiceResponse<Note | null>> {
     try {
-      const note = await this.noteRepository.getNote(note_id);
+      const note = await this.noteRepository.getNote(noteId);
       this.logger.info(note, "Note found");
-      const noteContent = await this.noteRepository.getNoteContent(note_id);
-      this.logger.info({ noteContent, note_id }, "Note content found");
-      const enhancedContent = await this.noteEnhancerService.getEnhancedNote(
-        note,
-        noteContent,
+      return ServiceResponse.success<Note>("Note found", note);
+    } catch (ex) {
+      const errorMessage = `Error getting note: $${(ex as Error).message}`;
+      this.logger.error(ex, errorMessage);
+      return ServiceResponse.failure(
+        "An error occurred while getting note.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
       );
+    }
+  }
 
-      await this.noteRepository.createNoteResult(note_id, enhancedContent);
-      return ServiceResponse.success<GeneratedNote>(
+  async createNoteSummary(
+    noteId: string,
+  ): Promise<ServiceResponse<NoteResultSummary | null>> {
+    try {
+      const note = await this.noteRepository.getNote(noteId);
+      const contents = await this.noteRepository.getNoteSegments(noteId);
+      if (!contents) {
+        return ServiceResponse.success<null>(
+          "No contents found for note.",
+          null,
+        );
+      }
+      const summaryText = await this.noteEnhancerService.getNoteSummary(
+        note,
+        contents,
+      );
+      const summary = await this.noteRepository.createNoteSummary(
+        noteId,
+        summaryText,
+      );
+      this.logger.info(summary, "Note found");
+      return ServiceResponse.success<NoteResultSummary>("Note found", summary);
+    } catch (ex) {
+      const errorMessage = `Error getting note: $${(ex as Error).message}`;
+      this.logger.error(ex, errorMessage);
+      return ServiceResponse.failure(
+        "An error occurred while getting note.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getNoteSummary(
+    noteId: string,
+  ): Promise<ServiceResponse<NoteResultSummary | null>> {
+    try {
+      const summary = await this.noteRepository.getNoteSummary(noteId);
+      this.logger.info(summary, "Note found");
+      return ServiceResponse.success<NoteResultSummary | null>(
         "Note found",
-        enhancedContent,
+        summary,
       );
     } catch (ex) {
       const errorMessage = `Error getting note: $${(ex as Error).message}`;
@@ -75,15 +119,15 @@ export class NoteService {
   }
 
   async addNoteContent(
-    note_id: string,
-    content_type: string,
+    noteId: string,
+    contentType: string,
     content: string,
   ): Promise<ServiceResponse<null>> {
     try {
-      const content_type_id =
-        await this.noteRepository.getContentTypesIds(content_type);
-      await this.noteRepository.updateNote(note_id, content_type_id, content);
-      this.logger.info({ note_id, content_type_id, content }, "content added");
+      const contentTypeId =
+        await this.noteRepository.getContentTypesIds(contentType);
+      await this.noteRepository.addNoteSegment(noteId, contentTypeId, content);
+      this.logger.info({ noteId, contentTypeId, content }, "content added");
 
       return ServiceResponse.success<null>("Note updated", null);
     } catch (ex) {
@@ -93,6 +137,24 @@ export class NoteService {
       this.logger.error(ex, errorMessage);
       return ServiceResponse.failure(
         "An error occurred while adding content to note.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getNoteSegments(
+    noteId: string,
+  ): Promise<ServiceResponse<NoteContent[] | null>> {
+    try {
+      const note = await this.noteRepository.getNoteSegments(noteId);
+      this.logger.info(note, "Note found");
+      return ServiceResponse.success<NoteContent[]>("Note found", note);
+    } catch (ex) {
+      const errorMessage = `Error getting note: $${(ex as Error).message}`;
+      this.logger.error(ex, errorMessage);
+      return ServiceResponse.failure(
+        "An error occurred while getting note.",
         null,
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
@@ -113,9 +175,41 @@ export class NoteService {
     }
   }
 
-  async getNoteResult(note_id: string): Promise<ServiceResponse<any | null>> {
+  async createNoteDocument(
+    noteId: string,
+  ): Promise<ServiceResponse<any | null>> {
     try {
-      const noteResult = await this.noteRepository.getNoteResult(note_id);
+      const note = await this.noteRepository.getNote(noteId);
+      const contents = await this.noteRepository.getNoteSegments(noteId);
+      if (!contents) {
+        return ServiceResponse.success<null>(
+          "No contents found for note.",
+          null,
+        );
+      }
+      const generatedNote = await this.noteEnhancerService.getEnhancedNote(
+        note,
+        contents,
+      );
+      const noteResult = await this.noteRepository.createNoteDocument(
+        noteId,
+        generatedNote,
+      );
+      this.logger.info({ noteId }, "Note result created");
+      return ServiceResponse.success("Note result created", noteResult);
+    } catch (ex) {
+      this.logger.error(ex, "Error getting note result");
+      return ServiceResponse.failure(
+        "An error occurred while getting note result.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getNoteDocument(noteId: string): Promise<ServiceResponse<any | null>> {
+    try {
+      const noteResult = await this.noteRepository.getNoteDocument(noteId);
       this.logger.info(noteResult[0], "Note result found");
       return ServiceResponse.success("Note result found", noteResult);
     } catch (ex) {
