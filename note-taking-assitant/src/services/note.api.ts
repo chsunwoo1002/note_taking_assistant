@@ -38,11 +38,14 @@ class NoteApiService {
 
   static async addContent(data: AddTextRequestParams): Promise<void> {
     const { noteId, content, contentType } = data
-    return this.sendRequest(`/note/${noteId}`, "POST", { content, contentType })
+    return this.sendRequest(`/note/segment/${noteId}`, "POST", {
+      content,
+      contentType
+    })
   }
 
   static async createNote(data: CreateNoteRequestParams): Promise<Note> {
-    return this.sendRequest("/note", "POST", data).then((note) => {
+    return this.sendRequest("/note/metadata", "POST", data).then((note) => {
       console.log("note before parse", note)
       return noteSchema.parse(note)
     })

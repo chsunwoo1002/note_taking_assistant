@@ -4,6 +4,7 @@ import type {
   Note,
   NoteContent,
   NoteResult,
+  NoteResultSummary,
 } from "@/common/types/types/db.types";
 import type { DatabaseConnection } from "@/common/types/types/db.types";
 import type { GeneratedNote } from "@/common/types/types/note.types";
@@ -44,7 +45,38 @@ export class NoteRepository {
     }
   }
 
-  async updateNote(
+  async createNoteSummary(
+    noteId: string,
+    content: string,
+  ): Promise<NoteResultSummary> {
+    try {
+      const query = await this.dbService
+        .insertInto("summaries")
+        .values({ noteId, content })
+        .returningAll()
+        .executeTakeFirstOrThrow();
+      return query;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async getNoteSummary(noteId: string): Promise<NoteResultSummary | null> {
+    try {
+      const query = await this.dbService
+        .selectFrom("summaries")
+        .selectAll()
+        .where("noteId", "=", noteId)
+        .executeTakeFirst();
+      return query || null;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async addNoteSegment(
     noteId: string,
     contentTypeId: string,
     content: string,
@@ -60,13 +92,14 @@ export class NoteRepository {
     }
   }
 
-  async getNoteContent(noteId: string): Promise<NoteContent[]> {
+  async getNoteSegments(noteId: string): Promise<NoteContent[]> {
     try {
       const query = await this.dbService
         .selectFrom("noteContents")
         .selectAll()
         .where("noteId", "=", noteId)
         .execute();
+      console.log("query", query);
       return query;
     } catch (error) {
       console.error(error);
@@ -88,7 +121,7 @@ export class NoteRepository {
     }
   }
 
-  async createNoteResult(noteId: string, result: GeneratedNote) {
+  async createNoteDocument(noteId: string, result: GeneratedNote) {
     try {
       const resultTypes = await this.dbService
         .selectFrom("resultTypes")
@@ -105,13 +138,10 @@ export class NoteRepository {
         content: content.content,
         orderIndex: index,
       }));
-      await this.dbService
+      return await this.dbService
         .insertInto("noteResults")
         .values(noteResultValues)
-        .execute();
-      await this.dbService
-        .insertInto("summaries")
-        .values({ noteId, content: result.summary })
+        .returningAll()
         .execute();
     } catch (error) {
       console.error(error);
@@ -132,7 +162,7 @@ export class NoteRepository {
     }
   }
 
-  async getNoteResult(noteId: string): Promise<NoteResult[]> {
+  async getNoteDocument(noteId: string): Promise<NoteResult[]> {
     try {
       const resultTypes = await this.dbService
         .selectFrom("resultTypes")

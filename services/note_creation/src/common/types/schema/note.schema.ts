@@ -7,7 +7,6 @@ const contentSchema = z.string();
 const contentTypeSchema = z.enum(["text", "image", "video"]);
 const summarySchema = z.string();
 const documentTypeSchema = z.enum([
-  "title",
   "heading1",
   "heading2",
   "heading3",
@@ -35,11 +34,14 @@ export const noteContentPostRequestSchema = z.object({
 });
 
 export const generatedNoteSchema = z.object({
-  summary: summarySchema,
   contents: z.array(
     z.object({
       type: documentTypeSchema,
       content: contentSchema,
     }),
   ),
+});
+
+export const generatedSummarySchema = z.object({
+  summary: summarySchema,
 });

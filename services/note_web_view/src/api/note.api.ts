@@ -1,19 +1,91 @@
 import { env } from "@/lib/env.config";
 
-export const getNotes = async (): Promise<any> => {
-  const notes = await fetch(`${env.NOTE_CREATION_SERVER_URL}/note/list/all`);
+interface NoteBaseInfo {
+  id: string;
+  title: string;
+  instruction: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
-  const data = await notes.json();
-  console.log(data.data);
-  return data.data;
-};
+interface NoteSummary {
+  noteId: string;
+  createdAt: Date;
+  updatedAt: Date;
+  summaryId: string;
+  content: string;
+}
 
-export const getNoteWithId = async (id: string): Promise<any> => {
-  const noteResult = await fetch(
-    `${env.NOTE_CREATION_SERVER_URL}/note/result/${id}`
-  );
+interface NoteSegment {
+  contentId: string;
+  noteId: string;
+  contentTypeId: string;
+  contentText: string;
+  fileUrl: string | null;
+  timestamp: string | null;
+  sourceUrl: string | null;
+  createdAt: string;
+}
 
-  const data = await noteResult.json();
-  console.log(data.data);
-  return data.data.sort((a: any, b: any) => a.order_index - b.order_index);
-};
+interface NoteDocument {
+  resultId: string;
+  noteId: string;
+  resultTypeId: string;
+  fileUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+  orderIndex: 7;
+  content: string;
+  type: string;
+}
+
+export default class NoteCreationApi {
+  private static async sendRequest<T>(
+    endpoint: string,
+    method: string,
+    data?: any
+  ): Promise<T> {
+    const url = `${env.NOTE_CREATION_SERVER_URL}${endpoint}`;
+
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: data ? JSON.stringify(data) : undefined,
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const responseJson = await response.json();
+      console.log("response json", responseJson);
+      return responseJson.data;
+    } catch (error) {
+      console.error(`Error in note API request to ${endpoint}:`, error);
+      throw error;
+    }
+  }
+
+  static async getNoteBaseInfo(noteId: string): Promise<NoteBaseInfo> {
+    return this.sendRequest<NoteBaseInfo>(`/note/metadata/${noteId}`, "GET");
+  }
+
+  static async getNoteSummary(noteId: string): Promise<NoteSummary> {
+    return this.sendRequest<NoteSummary>(`/note/summary/${noteId}`, "GET");
+  }
+
+  static async getNoteDocument(noteId: string): Promise<NoteDocument[]> {
+    return this.sendRequest<NoteDocument[]>(`/note/document/${noteId}`, "GET");
+  }
+
+  static async getNoteSegments(noteId: string): Promise<NoteSegment[]> {
+    return this.sendRequest<NoteSegment[]>(`/note/segments/${noteId}`, "GET");
+  }
+
+  static async getAllNotes(): Promise<NoteBaseInfo[]> {
+    return this.sendRequest<NoteBaseInfo[]>(`/note/list/all`, "GET");
+  }
+}
