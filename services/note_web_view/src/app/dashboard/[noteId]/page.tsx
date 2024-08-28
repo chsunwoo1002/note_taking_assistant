@@ -1,15 +1,18 @@
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
-import { getNoteWithId } from "@/api/note.api";
 import Typography from "@/components/ui/typography";
 import NoteWorkspace from "@/components/dashbaord/note-workspace";
+import NoteCreationApi from "@/api/note.api";
+import { Card } from "@/components/ui/card";
 interface PageProps {
   params: { noteId: string };
 }
 
 export default async function DashboardContent({ params }: PageProps) {
+  const noteBaseInfo = await NoteCreationApi.getNoteBaseInfo(params.noteId);
+
   return (
-    <div className="flex flex-col gap-4">
+    <Card className="flex flex-col gap-2 mt-4 p-4">
+      <Typography variant="h2">{noteBaseInfo.title}</Typography>
       <NoteWorkspace noteId={params.noteId} />
-    </div>
+    </Card>
   );
 }

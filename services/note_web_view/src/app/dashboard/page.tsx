@@ -1,6 +1,3 @@
-import { getNotes } from "@/api/note.api";
-import NoteWorkspace from "@/components/dashbaord/note-workspace";
-
 export interface Note {
   id: number;
   title: string;
@@ -12,7 +9,5 @@ export interface DashboardProps {
 }
 
 export default async function Dashboard() {
-  const notes = await getNotes();
-
   return <div>Dashboard</div>;
 }
