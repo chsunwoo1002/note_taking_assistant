@@ -76,6 +76,7 @@ export class NoteService {
           null,
         );
       }
+      await this.noteRepository.deleteNoteSummary(noteId);
       const summaryText = await this.noteEnhancerService.getNoteSummary(
         note,
         contents,
@@ -191,6 +192,7 @@ export class NoteService {
         note,
         contents,
       );
+      await this.noteRepository.deleteNoteDocument(noteId);
       const noteResult = await this.noteRepository.createNoteDocument(
         noteId,
         generatedNote,
