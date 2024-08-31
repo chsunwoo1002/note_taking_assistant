@@ -76,6 +76,18 @@ export class NoteRepository {
     }
   }
 
+  async deleteNoteSummary(noteId: string): Promise<void> {
+    try {
+      await this.dbService
+        .deleteFrom("summaries")
+        .where("noteId", "=", noteId)
+        .execute();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   async addNoteSegment(
     noteId: string,
     contentTypeId: string,
@@ -143,6 +155,19 @@ export class NoteRepository {
         .values(noteResultValues)
         .returningAll()
         .execute();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  async deleteNoteDocument(noteId: string): Promise<void> {
+    try {
+      await this.dbService
+        .deleteFrom("noteResults")
+        .where("noteId", "=", noteId)
+        .execute();
+      console.log("deleted note document");
     } catch (error) {
       console.error(error);
       throw error;

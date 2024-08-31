@@ -55,7 +55,7 @@ export class NoteController implements interfaces.Controller {
     return handleServiceResponse(serviceResponse, res);
   }
 
-  @httpPost("/summary/:noteId", validateRequest(noteContentPostRequestSchema))
+  @httpPost("/summary/:noteId", validateRequest(noteGetRequestSchema))
   async createNoteSummary(req: Request, res: Response) {
     const noteId = req.params.noteId as string;
     const serviceResponse = await this.noteService.createNoteSummary(noteId);
