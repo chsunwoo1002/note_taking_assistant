@@ -61,7 +61,6 @@ export default class NoteCreationApi {
       }
 
       const responseJson = await response.json();
-      console.log("response json", responseJson);
       return responseJson.data;
     } catch (error) {
       console.error(`Error in note API request to ${endpoint}:`, error);
@@ -77,8 +76,16 @@ export default class NoteCreationApi {
     return this.sendRequest<NoteSummary>(`/note/summary/${noteId}`, "GET");
   }
 
-  static async getNoteDocument(noteId: string): Promise<NoteDocument[]> {
+  static async createNoteSummary(noteId: string): Promise<NoteSummary> {
+    return this.sendRequest<NoteSummary>(`/note/summary/${noteId}`, "POST");
+  }
+
+  static async getDocument(noteId: string): Promise<NoteDocument[]> {
     return this.sendRequest<NoteDocument[]>(`/note/document/${noteId}`, "GET");
+  }
+
+  static async createDocument(noteId: string): Promise<NoteDocument[]> {
+    return this.sendRequest<NoteDocument[]>(`/note/document/${noteId}`, "POST");
   }
 
   static async getNoteSegments(noteId: string): Promise<NoteSegment[]> {
