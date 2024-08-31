@@ -119,6 +119,18 @@ export class NoteRepository {
     }
   }
 
+  async deleteNoteSegment(contentId: string): Promise<void> {
+    try {
+      await this.dbService
+        .deleteFrom("noteContents")
+        .where("contentId", "=", contentId)
+        .execute();
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   async getContentTypesIds(typeName: string): Promise<string> {
     try {
       const query = await this.dbService

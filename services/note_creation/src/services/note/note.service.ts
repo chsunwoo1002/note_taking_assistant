@@ -162,6 +162,20 @@ export class NoteService {
     }
   }
 
+  async deleteNoteSegment(contentId: string): Promise<ServiceResponse<null>> {
+    try {
+      await this.noteRepository.deleteNoteSegment(contentId);
+      return ServiceResponse.success<null>("Note segment deleted", null);
+    } catch (ex) {
+      this.logger.error(ex, "Error deleting note segment");
+      return ServiceResponse.failure(
+        "An error occurred while deleting note segment.",
+        null,
+        StatusCodes.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async getNotes(): Promise<ServiceResponse<Note[] | null>> {
     try {
       const notes = await this.noteRepository.getNotes();

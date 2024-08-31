@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { inject } from "inversify";
 import {
   controller,
+  httpDelete,
   httpGet,
   httpPost,
   type interfaces,
@@ -90,6 +91,13 @@ export class NoteController implements interfaces.Controller {
   async getNoteSegments(req: Request, res: Response) {
     const noteId = req.params.noteId as string;
     const serviceResponse = await this.noteService.getNoteSegments(noteId);
+    return handleServiceResponse(serviceResponse, res);
+  }
+
+  @httpDelete("/:noteId")
+  async deleteNote(req: Request, res: Response) {
+    const noteId = req.params.noteId as string;
+    const serviceResponse = await this.noteService.deleteNoteSegment(noteId);
     return handleServiceResponse(serviceResponse, res);
   }
 
