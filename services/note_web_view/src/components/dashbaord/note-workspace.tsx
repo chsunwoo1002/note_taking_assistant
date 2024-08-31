@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Summary from "./workspace/summary";
-import NoteView from "./workspace/note";
+import Document from "./workspace/note";
 import SegmentCollections from "./workspace/content-collection";
 
 interface NoteWorkspaceProps {
@@ -12,14 +12,14 @@ export default function NoteWorkspace({ noteId }: NoteWorkspaceProps) {
     <Tabs defaultValue="summary">
       <TabsList>
         <TabsTrigger value="summary">Summary</TabsTrigger>
-        <TabsTrigger value="notes">Notes</TabsTrigger>
+        <TabsTrigger value="document">Document</TabsTrigger>
         <TabsTrigger value="collections">Collections</TabsTrigger>
       </TabsList>
       <TabsContent value="summary">
         <Summary noteId={noteId} />
       </TabsContent>
-      <TabsContent value="notes">
-        <NoteView noteId={noteId} />
+      <TabsContent value="document">
+        <Document noteId={noteId} />
       </TabsContent>
       <TabsContent value="collections">
         <SegmentCollections noteId={noteId} />
