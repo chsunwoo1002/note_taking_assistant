@@ -92,6 +92,10 @@ export default class NoteCreationApi {
     return this.sendRequest<NoteSegment[]>(`/note/segments/${noteId}`, "GET");
   }
 
+  static async deleteNoteSegment(segmentId: string): Promise<void> {
+    return this.sendRequest<void>(`/note/segment/${segmentId}`, "DELETE");
+  }
+
   static async getAllNotes(): Promise<NoteBaseInfo[]> {
     return this.sendRequest<NoteBaseInfo[]>(`/note/list/all`, "GET");
   }
