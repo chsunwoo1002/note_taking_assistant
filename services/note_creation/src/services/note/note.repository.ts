@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 
+import type { INoteRepository } from "@/common/types/interfaces/note.interface";
 import type {
   Note,
   NoteContent,
@@ -11,7 +12,7 @@ import type { GeneratedNote } from "@/common/types/types/note.types";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
 
 @injectable()
-export class NoteRepository {
+export class NoteRepository implements INoteRepository {
   constructor(
     @inject(DEPENDENCY_IDENTIFIERS.Kysely)
     private readonly dbService: DatabaseConnection,
@@ -162,11 +163,12 @@ export class NoteRepository {
         content: content.content,
         orderIndex: index,
       }));
-      return await this.dbService
+      await this.dbService
         .insertInto("noteResults")
         .values(noteResultValues)
         .returningAll()
         .execute();
+      return;
     } catch (error) {
       console.error(error);
       throw error;

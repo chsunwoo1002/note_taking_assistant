@@ -2,6 +2,7 @@ import { inject, injectable } from "inversify";
 import { zodResponseFormat } from "openai/helpers/zod";
 
 import type { Logger, LoggerFactory } from "@/common/logger";
+import type { INoteEnhancerService } from "@/common/types/interfaces/note.interface";
 import {
   generatedNoteSchema,
   generatedSummarySchema,
@@ -15,7 +16,7 @@ import type { GeneratedNote } from "@/common/types/types/note.types";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
 
 @injectable()
-export class NoteEnhancerService {
+export class NoteEnhancerService implements INoteEnhancerService {
   private readonly logger: Logger;
   constructor(
     @inject(DEPENDENCY_IDENTIFIERS.LoggerFactory)

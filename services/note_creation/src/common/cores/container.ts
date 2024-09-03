@@ -3,7 +3,12 @@ import { CamelCasePlugin, Kysely, PostgresDialect } from "kysely";
 import OpenAI from "openai";
 import { Pool } from "pg";
 
-import { Logger, LoggerFactory } from "@/common/logger";
+import {
+  type ILogger,
+  type ILoggerFactory,
+  Logger,
+  LoggerFactory,
+} from "@/common/logger";
 import type {
   IDatabaseConfig,
   OpenAIConfig,
@@ -23,12 +28,19 @@ import { NoteService } from "@/services/note/note.service";
 import { NoteEnhancerService } from "@/services/note/noteEnhencer.service";
 
 import "@/services/note/note.controller";
+import type {
+  INoteEnhancerService,
+  INoteRepository,
+  INoteService,
+} from "../types/interfaces/note.interface";
 
 const container = new Container();
 
-container.bind<NoteService>(DEPENDENCY_IDENTIFIERS.NoteService).to(NoteService);
 container
-  .bind<NoteRepository>(DEPENDENCY_IDENTIFIERS.NoteRepository)
+  .bind<INoteService>(DEPENDENCY_IDENTIFIERS.NoteService)
+  .to(NoteService);
+container
+  .bind<INoteRepository>(DEPENDENCY_IDENTIFIERS.NoteRepository)
   .to(NoteRepository);
 
 container
@@ -38,7 +50,7 @@ container
   .bind<DatabaseConnection>(DEPENDENCY_IDENTIFIERS.Kysely)
   .toDynamicValue((context: interfaces.Context) => {
     const config = context.container.get<IDatabaseConfig>(
-      DEPENDENCY_IDENTIFIERS.DatabaseConfig
+      DEPENDENCY_IDENTIFIERS.DatabaseConfig,
     );
     const pool = new Pool(config);
     const dialect = new PostgresDialect({ pool });
@@ -55,16 +67,16 @@ container
   .bind<OpenAIClient>(DEPENDENCY_IDENTIFIERS.OpenAIClient)
   .toDynamicValue((context: interfaces.Context) => {
     const config = context.container.get<OpenAIConfig>(
-      DEPENDENCY_IDENTIFIERS.OpenAIConfig
+      DEPENDENCY_IDENTIFIERS.OpenAIConfig,
     );
     return new OpenAI(config);
   });
 container
-  .bind<NoteEnhancerService>(DEPENDENCY_IDENTIFIERS.NoteEnhancerService)
+  .bind<INoteEnhancerService>(DEPENDENCY_IDENTIFIERS.NoteEnhancerService)
   .to(NoteEnhancerService);
 container
-  .bind<LoggerFactory>(DEPENDENCY_IDENTIFIERS.LoggerFactory)
+  .bind<ILoggerFactory>(DEPENDENCY_IDENTIFIERS.LoggerFactory)
   .to(LoggerFactory);
-container.bind<Logger>(DEPENDENCY_IDENTIFIERS.Logger).to(Logger);
+container.bind<ILogger>(DEPENDENCY_IDENTIFIERS.Logger).to(Logger);
 
 export { container };

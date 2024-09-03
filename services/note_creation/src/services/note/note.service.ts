@@ -1,28 +1,31 @@
 import { StatusCodes } from "http-status-codes";
 import { inject, injectable } from "inversify";
 
-import type { Logger, LoggerFactory } from "@/common/logger";
+import type { ILogger, ILoggerFactory } from "@/common/logger";
 import { ServiceResponse } from "@/common/models/serviceResponse";
+import type {
+  INoteEnhancerService,
+  INoteRepository,
+  INoteService,
+} from "@/common/types/interfaces/note.interface";
 import type {
   Note,
   NoteContent,
   NoteResultSummary,
 } from "@/common/types/types/db.types";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
-import type { NoteRepository } from "./note.repository";
-import type { NoteEnhancerService } from "./noteEnhencer.service";
 
 @injectable()
-export class NoteService {
-  private readonly logger: Logger;
+export class NoteService implements INoteService {
+  private readonly logger: ILogger;
 
   constructor(
     @inject(DEPENDENCY_IDENTIFIERS.NoteRepository)
-    private readonly noteRepository: NoteRepository,
+    private readonly noteRepository: INoteRepository,
     @inject(DEPENDENCY_IDENTIFIERS.LoggerFactory)
-    private readonly loggerFactory: LoggerFactory,
+    private readonly loggerFactory: ILoggerFactory,
     @inject(DEPENDENCY_IDENTIFIERS.NoteEnhancerService)
-    private readonly noteEnhancerService: NoteEnhancerService,
+    private readonly noteEnhancerService: INoteEnhancerService,
   ) {
     this.logger = this.loggerFactory.createLogger("SERVICE_NOTE");
   }
