@@ -10,7 +10,7 @@
     "lint:fix": "biome check src/ --fix",
     "format": "biome format src/",
     "format:fix": "biome format src/ --fix",
-    "test:unit": "jest"
+    "test:unit": "jest --coverage"
   },
   "keywords": [],
   "license": "ISC",
