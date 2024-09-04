@@ -2,8 +2,8 @@ import type { ServiceResponse } from "@/common/models/serviceResponse";
 import type {
   Note,
   NoteContent,
-  NoteResult,
   NoteResultSummary,
+  NoteResultWithTypeName,
 } from "@/common/types/types/db.types";
 import type { GeneratedNote } from "../types/note.types";
 
@@ -27,7 +27,7 @@ export interface INoteRepository {
   getNotes(): Promise<Note[]>;
   deleteNoteDocument(noteId: string): Promise<void>;
   createNoteDocument(noteId: string, result: GeneratedNote): Promise<void>;
-  getNoteDocument(noteId: string): Promise<NoteResult[]>;
+  getNoteDocument(noteId: string): Promise<NoteResultWithTypeName[]>;
 }
 
 export interface INoteService {
@@ -52,8 +52,10 @@ export interface INoteService {
   ): Promise<ServiceResponse<NoteContent[] | null>>;
   deleteNoteSegment(contentId: string): Promise<ServiceResponse<null>>;
   getNotes(): Promise<ServiceResponse<Note[] | null>>;
-  createNoteDocument(noteId: string): Promise<ServiceResponse<any | null>>;
-  getNoteDocument(noteId: string): Promise<ServiceResponse<any | null>>;
+  createNoteDocument(noteId: string): Promise<ServiceResponse<null>>;
+  getNoteDocument(
+    noteId: string,
+  ): Promise<ServiceResponse<NoteResultWithTypeName[] | null>>;
 }
 
 export interface INoteEnhancerService {

@@ -43,7 +43,7 @@ export interface NoteContentsTable {
   contentId: Generated<string>;
   noteId: string;
   contentTypeId: string;
-  contentText: string | null;
+  contentText: string;
   fileUrl: string | null;
   timestamp: Date | null;
   sourceUrl: string | null;

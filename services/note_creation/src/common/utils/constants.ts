@@ -13,6 +13,7 @@ export const DEPENDENCY_IDENTIFIERS = {
   NoteEnhancerService: Symbol.for("NoteEnhancerService"),
   OpenAIConfig: Symbol.for("OpenAIConfig"),
   OpenAIClient: Symbol.for("OpenAIClient"),
+  EnvConfig: Symbol.for("EnvConfig"),
 };
 
 export const DATABASE_CONFIG = {

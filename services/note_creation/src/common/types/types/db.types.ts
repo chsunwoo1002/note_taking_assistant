@@ -37,3 +37,7 @@ export type NoteResultSummaryUpdate = Updateable<NoteResultsTable>;
 
 export type DatabaseConnection = Kysely<DatabaseSchema>;
 export type OpenAIClient = OpenAI;
+
+export type NoteResultWithTypeName = NoteResult & {
+  type: string;
+};

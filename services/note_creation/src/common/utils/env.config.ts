@@ -3,7 +3,26 @@ import { bool, cleanEnv, host, num, port, str, testOnly } from "envalid";
 
 dotenv.config();
 
-export const env = cleanEnv(process.env, {
+export interface EnvConfig {
+  NODE_ENV: string;
+  IS_PRODUCTION: boolean;
+  HOST: string;
+  PORT: number;
+  CORS_ORIGIN: string;
+  COMMON_RATE_LIMIT_MAX_REQUESTS: number;
+  COMMON_RATE_LIMIT_WINDOW_MS: number;
+  OPENAI_API_KEY: string;
+  OPENAI_ORGANIZATION: string;
+  DB_HOST: string;
+  DB_PORT: number;
+  DB_USERNAME: string;
+  DB_PASSWORD: string;
+  DB_NAME: string;
+  DB_SSL_REJECT_UNAUTHORIZED: boolean;
+  DB_SSL_CA: string;
+}
+
+export const env: EnvConfig = cleanEnv(process.env, {
   NODE_ENV: str({
     devDefault: testOnly("test"),
     choices: ["development", "production", "test"],

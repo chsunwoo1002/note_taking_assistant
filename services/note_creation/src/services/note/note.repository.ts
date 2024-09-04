@@ -1,11 +1,12 @@
 import { inject, injectable } from "inversify";
 
+import type { ILogger, ILoggerFactory } from "@/common/logger";
 import type { INoteRepository } from "@/common/types/interfaces/note.interface";
 import type {
   Note,
   NoteContent,
-  NoteResult,
   NoteResultSummary,
+  NoteResultWithTypeName,
 } from "@/common/types/types/db.types";
 import type { DatabaseConnection } from "@/common/types/types/db.types";
 import type { GeneratedNote } from "@/common/types/types/note.types";
@@ -13,10 +14,15 @@ import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
 
 @injectable()
 export class NoteRepository implements INoteRepository {
+  private readonly logger: ILogger;
   constructor(
     @inject(DEPENDENCY_IDENTIFIERS.Kysely)
     private readonly dbService: DatabaseConnection,
-  ) {}
+    @inject(DEPENDENCY_IDENTIFIERS.LoggerFactory)
+    private readonly loggerFactory: ILoggerFactory,
+  ) {
+    this.logger = this.loggerFactory.createLogger("DB");
+  }
 
   async createNote(title: string, instruction: string | null): Promise<Note> {
     try {
@@ -27,7 +33,7 @@ export class NoteRepository implements INoteRepository {
         .executeTakeFirstOrThrow();
       return query;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error, "Error creating note");
       throw error;
     }
   }
@@ -41,7 +47,7 @@ export class NoteRepository implements INoteRepository {
         .executeTakeFirstOrThrow();
       return query;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error, "Error getting note");
       throw error;
     }
   }
@@ -58,7 +64,7 @@ export class NoteRepository implements INoteRepository {
         .executeTakeFirstOrThrow();
       return query;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -72,7 +78,7 @@ export class NoteRepository implements INoteRepository {
         .executeTakeFirst();
       return query || null;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -84,7 +90,7 @@ export class NoteRepository implements INoteRepository {
         .where("noteId", "=", noteId)
         .execute();
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -100,7 +106,7 @@ export class NoteRepository implements INoteRepository {
         .values({ noteId, contentTypeId, contentText: content })
         .execute();
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -112,10 +118,10 @@ export class NoteRepository implements INoteRepository {
         .selectAll()
         .where("noteId", "=", noteId)
         .execute();
-      console.log("query", query);
+      this.logger.info(query, "Note segments");
       return query;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -127,7 +133,7 @@ export class NoteRepository implements INoteRepository {
         .where("contentId", "=", contentId)
         .execute();
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -141,7 +147,7 @@ export class NoteRepository implements INoteRepository {
         .executeTakeFirstOrThrow();
       return query.contentTypeId;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -152,7 +158,6 @@ export class NoteRepository implements INoteRepository {
         .selectFrom("resultTypes")
         .selectAll()
         .execute();
-      console.log(resultTypes);
       const resultTypesMap = new Map<string, string>();
       resultTypes.forEach((resultType) => {
         resultTypesMap.set(resultType.typeName, resultType.resultTypeId);
@@ -168,9 +173,8 @@ export class NoteRepository implements INoteRepository {
         .values(noteResultValues)
         .returningAll()
         .execute();
-      return;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -181,9 +185,9 @@ export class NoteRepository implements INoteRepository {
         .deleteFrom("noteResults")
         .where("noteId", "=", noteId)
         .execute();
-      console.log("deleted note document");
+      this.logger.info("deleted note document");
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
@@ -196,18 +200,18 @@ export class NoteRepository implements INoteRepository {
         .execute();
       return query;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }
 
-  async getNoteDocument(noteId: string): Promise<NoteResult[]> {
+  async getNoteDocument(noteId: string): Promise<NoteResultWithTypeName[]> {
     try {
       const resultTypes = await this.dbService
         .selectFrom("resultTypes")
         .selectAll()
         .execute();
-      console.log(resultTypes);
+      this.logger.info(resultTypes, "Result types");
       const resultTypesMap = new Map<string, string>();
       resultTypes.forEach((resultType) => {
         resultTypesMap.set(resultType.resultTypeId, resultType.typeName);
@@ -219,10 +223,10 @@ export class NoteRepository implements INoteRepository {
         .execute();
       return query.map((result) => ({
         ...result,
-        type: resultTypesMap.get(result.resultTypeId),
+        type: resultTypesMap.get(result.resultTypeId) || "paragraph",
       }));
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       throw error;
     }
   }

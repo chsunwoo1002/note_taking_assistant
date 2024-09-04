@@ -6,4 +6,5 @@ module.exports = {
     "^tests/(.*)$": "<rootDir>/tests/$1",
   },
   setupFiles: ["<rootDir>/jest.setup.ts"],
+  coveragePathIgnorePatterns: ["/node_modules/", "/tests/unit/mocks/"],
 };

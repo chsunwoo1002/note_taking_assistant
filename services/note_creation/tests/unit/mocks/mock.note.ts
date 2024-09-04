@@ -8,6 +8,7 @@ import type {
   NoteContent,
   NoteResult,
   NoteResultSummary,
+  NoteResultWithTypeName,
 } from "@/common/types/types/db.types";
 import type { GeneratedNote } from "@/common/types/types/note.types";
 
@@ -65,8 +66,33 @@ const mockGeneratedNote: GeneratedNote = {
   ],
 };
 
+const mockNoteResultWithTypeName: NoteResultWithTypeName[] = [
+  {
+    ...mockNoteDocument[0],
+    type: "paragraph",
+  },
+];
+
 const mockNoteSegments: NoteContent[] = [mockNoteContent];
 const mockNotes: Note[] = [mockNote];
+
+const mockLLMGeneratedNote: GeneratedNote = {
+  contents: mockGeneratedNote.contents,
+};
+
+const mockLLMResponse = {
+  choices: [{ message: { parsed: mockLLMGeneratedNote } }],
+  usage: { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150 },
+};
+
+const mockLLMGeneratedSummary = {
+  summary: "This is a summary of the note.",
+};
+
+const mockLLMResponseSummary = {
+  choices: [{ message: { parsed: mockLLMGeneratedSummary } }],
+  usage: { prompt_tokens: 100, completion_tokens: 50, total_tokens: 150 },
+};
 
 export const NOTE_MOCKS = {
   mockNote,
@@ -81,6 +107,11 @@ export const NOTE_MOCKS = {
   mockGeneratedNote,
   mockNotes,
   mockNoteDocument,
+  mockNoteResultWithTypeName,
+  mockLLMGeneratedNote,
+  mockLLMResponse,
+  mockLLMGeneratedSummary,
+  mockLLMResponseSummary,
 };
 
 export class MockNoteService implements INoteService {
@@ -97,21 +128,11 @@ export class MockNoteService implements INoteService {
 }
 
 export class MockNoteRepository implements INoteRepository {
-  getContentTypesIds(typeName: string): Promise<string> {
-    throw new Error("Method not implemented.");
-  }
-  getNotes(): Promise<Note[]> {
-    throw new Error("Method not implemented.");
-  }
-  deleteNoteDocument(noteId: string): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  createNoteDocument(noteId: string, result: GeneratedNote): Promise<void> {
-    throw new Error("Method not implemented.");
-  }
-  getNoteDocument(noteId: string): Promise<NoteResult[]> {
-    throw new Error("Method not implemented.");
-  }
+  getContentTypesIds = jest.fn();
+  getNotes = jest.fn();
+  deleteNoteDocument = jest.fn();
+  createNoteDocument = jest.fn();
+  getNoteDocument = jest.fn();
   createNote = jest.fn();
   getNote = jest.fn();
   createNoteSummary = jest.fn();

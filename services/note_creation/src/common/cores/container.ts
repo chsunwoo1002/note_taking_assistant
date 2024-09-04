@@ -33,6 +33,7 @@ import type {
   INoteRepository,
   INoteService,
 } from "../types/interfaces/note.interface";
+import { type EnvConfig, env } from "../utils/env.config";
 
 const container = new Container();
 
@@ -71,6 +72,9 @@ container
     );
     return new OpenAI(config);
   });
+container
+  .bind<EnvConfig>(DEPENDENCY_IDENTIFIERS.EnvConfig)
+  .toConstantValue(env);
 container
   .bind<INoteEnhancerService>(DEPENDENCY_IDENTIFIERS.NoteEnhancerService)
   .to(NoteEnhancerService);
