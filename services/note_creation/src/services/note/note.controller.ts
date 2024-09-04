@@ -8,7 +8,8 @@ import {
   type interfaces,
 } from "inversify-express-utils";
 
-import type { Logger, LoggerFactory } from "@/common/logger";
+import type { ILogger, ILoggerFactory } from "@/common/logger";
+import type { INoteService } from "@/common/types/interfaces/note.interface";
 import {
   noteContentPostRequestSchema,
   noteGetRequestSchema,
@@ -19,16 +20,15 @@ import {
   handleServiceResponse,
   validateRequest,
 } from "@/common/utils/httpHandlers";
-import type { NoteService } from "@/services/note/note.service";
 
 @controller("/note")
 export class NoteController implements interfaces.Controller {
-  private readonly logger: Logger;
+  private readonly logger: ILogger;
   constructor(
     @inject(DEPENDENCY_IDENTIFIERS.NoteService)
-    private readonly noteService: NoteService,
+    private readonly noteService: INoteService,
     @inject(DEPENDENCY_IDENTIFIERS.LoggerFactory)
-    private readonly loggerFactory: LoggerFactory,
+    private readonly loggerFactory: ILoggerFactory,
   ) {
     this.logger = this.loggerFactory.createLogger("HTTP");
   }
@@ -36,8 +36,11 @@ export class NoteController implements interfaces.Controller {
   @httpPost("/metadata", validateRequest(notePostRequestSchema))
   async createNote(req: Request, res: Response) {
     const title = req.body.title as string;
-    const content = req.body.content as string | null;
-    const serviceResponse = await this.noteService.createNote(title, content);
+    const instruction = req.body.instruction as string | null;
+    const serviceResponse = await this.noteService.createNote(
+      title,
+      instruction,
+    );
     this.logger.info(
       { serviceResponse, url: req.url },
       "sending service response",

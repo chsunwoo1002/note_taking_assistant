@@ -7,10 +7,13 @@ import helmet from "helmet";
 import { container } from "@/common/cores/container";
 import { server } from "@/common/cores/server";
 import type { LoggerFactory } from "@/common/logger";
+import {
+  addErrorToRequestLog,
+  unexpectedRequest,
+} from "@/common/middlewares/errorHandler";
+import { httpLogger } from "@/common/middlewares/httpLogger";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
 import { env } from "@/common/utils/env.config";
-import errorHandler from "./common/middlewares/errorHandler";
-import { httpLogger } from "./common/middlewares/httpLogger";
 
 const loggerFactory = container.get<LoggerFactory>(
   DEPENDENCY_IDENTIFIERS.LoggerFactory,
@@ -27,7 +30,8 @@ server
     app.use(httpLogger());
   })
   .setErrorConfig((app) => {
-    app.use(errorHandler());
+    app.use(addErrorToRequestLog);
+    app.use(unexpectedRequest);
   })
   .build()
   .listen(env.PORT, () => {

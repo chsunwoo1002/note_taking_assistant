@@ -4,14 +4,20 @@ import pino from "pino";
 
 import type { LoggerLabel } from "@/common/types/types/logger.types";
 import { PATHS } from "@/common/utils/constants";
-import { env } from "@/common/utils/env.config";
+
+export interface ILogger {
+  info(obj: any, msg?: string, ...args: any[]): void;
+  error(obj: any, msg?: string, ...args: any[]): void;
+  warn(obj: any, msg?: string, ...args: any[]): void;
+  debug(obj: any, msg?: string, ...args: any[]): void;
+}
 
 @injectable()
-export class Logger {
+export class Logger implements ILogger {
   private logger: pino.Logger;
 
-  constructor(label: LoggerLabel) {
-    const transport = env.IS_PRODUCTION
+  constructor(label: LoggerLabel, isProduction: boolean) {
+    const transport = isProduction
       ? pino.transport({
           target: "pino/file",
           options: {
@@ -32,7 +38,7 @@ export class Logger {
 
     this.logger = pino(
       {
-        level: env.IS_PRODUCTION ? "info" : "debug",
+        level: isProduction ? "info" : "debug",
         base: { label },
         timestamp: pino.stdTimeFunctions.isoTime,
       },

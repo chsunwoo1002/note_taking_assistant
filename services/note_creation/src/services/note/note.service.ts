@@ -1,28 +1,31 @@
 import { StatusCodes } from "http-status-codes";
 import { inject, injectable } from "inversify";
 
-import type { Logger, LoggerFactory } from "@/common/logger";
+import type { ILogger, ILoggerFactory } from "@/common/logger";
 import { ServiceResponse } from "@/common/models/serviceResponse";
+import type {
+  INoteEnhancerService,
+  INoteRepository,
+  INoteService,
+} from "@/common/types/interfaces/note.interface";
 import type {
   Note,
   NoteContent,
   NoteResultSummary,
 } from "@/common/types/types/db.types";
 import { DEPENDENCY_IDENTIFIERS } from "@/common/utils/constants";
-import type { NoteRepository } from "./note.repository";
-import type { NoteEnhancerService } from "./noteEnhencer.service";
 
 @injectable()
-export class NoteService {
-  private readonly logger: Logger;
+export class NoteService implements INoteService {
+  private readonly logger: ILogger;
 
   constructor(
     @inject(DEPENDENCY_IDENTIFIERS.NoteRepository)
-    private readonly noteRepository: NoteRepository,
+    private readonly noteRepository: INoteRepository,
     @inject(DEPENDENCY_IDENTIFIERS.LoggerFactory)
-    private readonly loggerFactory: LoggerFactory,
+    private readonly loggerFactory: ILoggerFactory,
     @inject(DEPENDENCY_IDENTIFIERS.NoteEnhancerService)
-    private readonly noteEnhancerService: NoteEnhancerService,
+    private readonly noteEnhancerService: INoteEnhancerService,
   ) {
     this.logger = this.loggerFactory.createLogger("SERVICE_NOTE");
   }
@@ -39,7 +42,7 @@ export class NoteService {
       return ServiceResponse.success<Note>("Note created", note);
     } catch (ex) {
       const errorMessage = `Error creating note: $${(ex as Error).message}`;
-      console.error(errorMessage);
+      this.logger.error(errorMessage);
       return ServiceResponse.failure(
         "An error occurred while creating note.",
         null,
@@ -70,12 +73,14 @@ export class NoteService {
     try {
       const note = await this.noteRepository.getNote(noteId);
       const contents = await this.noteRepository.getNoteSegments(noteId);
-      if (!contents) {
+
+      if (contents.length === 0) {
         return ServiceResponse.success<null>(
           "No contents found for note.",
           null,
         );
       }
+
       await this.noteRepository.deleteNoteSummary(noteId);
       const summaryText = await this.noteEnhancerService.getNoteSummary(
         note,
@@ -91,7 +96,7 @@ export class NoteService {
       const errorMessage = `Error getting note: $${(ex as Error).message}`;
       this.logger.error(ex, errorMessage);
       return ServiceResponse.failure(
-        "An error occurred while getting note.",
+        "An error occurred while getting note summary.",
         null,
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
@@ -112,7 +117,7 @@ export class NoteService {
       const errorMessage = `Error getting note: $${(ex as Error).message}`;
       this.logger.error(ex, errorMessage);
       return ServiceResponse.failure(
-        "An error occurred while getting note.",
+        "An error occurred while getting note summary.",
         null,
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
@@ -165,6 +170,7 @@ export class NoteService {
   async deleteNoteSegment(contentId: string): Promise<ServiceResponse<null>> {
     try {
       await this.noteRepository.deleteNoteSegment(contentId);
+      this.logger.info({ contentId }, "Note segment deleted");
       return ServiceResponse.success<null>("Note segment deleted", null);
     } catch (ex) {
       this.logger.error(ex, "Error deleting note segment");
@@ -179,6 +185,7 @@ export class NoteService {
   async getNotes(): Promise<ServiceResponse<Note[] | null>> {
     try {
       const notes = await this.noteRepository.getNotes();
+      this.logger.info(notes, "Notes found");
       return ServiceResponse.success<Note[]>("Notes found", notes);
     } catch (ex) {
       this.logger.error(ex, "Error getting notes");
@@ -196,7 +203,7 @@ export class NoteService {
     try {
       const note = await this.noteRepository.getNote(noteId);
       const contents = await this.noteRepository.getNoteSegments(noteId);
-      if (!contents) {
+      if (contents.length === 0) {
         return ServiceResponse.success<null>(
           "No contents found for note.",
           null,
@@ -207,12 +214,9 @@ export class NoteService {
         contents,
       );
       await this.noteRepository.deleteNoteDocument(noteId);
-      const noteResult = await this.noteRepository.createNoteDocument(
-        noteId,
-        generatedNote,
-      );
+      await this.noteRepository.createNoteDocument(noteId, generatedNote);
       this.logger.info({ noteId }, "Note result created");
-      return ServiceResponse.success("Note result created", noteResult);
+      return ServiceResponse.success("Note result created", null);
     } catch (ex) {
       this.logger.error(ex, "Error getting note result");
       return ServiceResponse.failure(
@@ -226,12 +230,12 @@ export class NoteService {
   async getNoteDocument(noteId: string): Promise<ServiceResponse<any | null>> {
     try {
       const noteResult = await this.noteRepository.getNoteDocument(noteId);
-      this.logger.info(noteResult[0], "Note result found");
-      return ServiceResponse.success("Note result found", noteResult);
+      this.logger.info(noteResult[0], "Note document found");
+      return ServiceResponse.success("Note document found", noteResult);
     } catch (ex) {
-      this.logger.error(ex, "Error getting note result");
+      this.logger.error(ex, "Error getting note document");
       return ServiceResponse.failure(
-        "An error occurred while getting note result.",
+        "An error occurred while getting note document.",
         null,
         StatusCodes.INTERNAL_SERVER_ERROR,
       );
