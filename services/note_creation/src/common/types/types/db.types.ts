@@ -9,7 +9,12 @@ import type {
   NoteResultsTable,
   NotesTable,
   ResultTypesTable,
+  UsersTable,
 } from "@/common/types/interfaces/db.interface";
+
+export type User = Selectable<UsersTable>;
+export type NewUser = Insertable<UsersTable>;
+export type UserUpdate = Updateable<UsersTable>;
 
 export type Note = Selectable<NotesTable>;
 export type NewNote = Insertable<NotesTable>;
