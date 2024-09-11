@@ -18,12 +18,25 @@ export interface IDatabaseConfig {
 }
 
 export interface DatabaseSchema {
+  users: UsersTable;
   notes: NotesTable;
   contentTypes: ContentTypesTable;
   noteContents: NoteContentsTable;
   resultTypes: ResultTypesTable;
   noteResults: NoteResultsTable;
   summaries: NoteResultSummaryTable;
+}
+
+export interface UsersTable {
+  userId: string;
+  givenName: string;
+  familyName: string;
+  nickname: string;
+  name: string;
+  picture: string;
+  updatedAt: string;
+  email: string;
+  emailVerified: boolean;
 }
 
 export interface NotesTable {

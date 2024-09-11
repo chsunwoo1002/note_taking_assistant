@@ -124,4 +124,11 @@ export class NoteController implements interfaces.Controller {
 
     return handleServiceResponse(serviceResponse, res);
   }
+
+  @httpPost("/test")
+  async getTextRedirect(req: Request, res: Response) {
+    console.log("redirecting to google");
+    console.log("body", req.body.accessToken);
+    return res.json({ message: "redirecting to google" });
+  }
 }
