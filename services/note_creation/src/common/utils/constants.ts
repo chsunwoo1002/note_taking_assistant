@@ -14,6 +14,8 @@ export const DEPENDENCY_IDENTIFIERS = {
   OpenAIConfig: Symbol.for("OpenAIConfig"),
   OpenAIClient: Symbol.for("OpenAIClient"),
   EnvConfig: Symbol.for("EnvConfig"),
+  AuthService: Symbol.for("AuthService"),
+  UserRepository: Symbol.for("UserRepository"),
 };
 
 export const DATABASE_CONFIG = {

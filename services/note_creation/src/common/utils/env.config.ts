@@ -20,6 +20,8 @@ export interface EnvConfig {
   DB_NAME: string;
   DB_SSL_REJECT_UNAUTHORIZED: boolean;
   DB_SSL_CA: string;
+  JWT_SECRET: string;
+  AUTH0_DOMAIN: string;
 }
 
 export const env: EnvConfig = cleanEnv(process.env, {
@@ -42,4 +44,6 @@ export const env: EnvConfig = cleanEnv(process.env, {
   DB_NAME: str({ devDefault: testOnly("DB_NAME") }),
   DB_SSL_REJECT_UNAUTHORIZED: bool({ devDefault: testOnly(false) }),
   DB_SSL_CA: str({ devDefault: testOnly("DB_SSL_CA") }),
+  JWT_SECRET: str({ devDefault: testOnly("JWT_SECRET") }),
+  AUTH0_DOMAIN: str({ devDefault: testOnly("AUTH0_DOMAIN") }),
 });
