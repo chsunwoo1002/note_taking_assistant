@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
@@ -10,7 +11,9 @@ export default function DashboardHeader() {
         <Button variant="outline">Search</Button>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline">Login</Button>
+        <Link href="/api/auth/logout">
+          <Button variant="outline">Logout</Button>
+        </Link>
         <Button variant="outline">Settings</Button>
       </div>
     </Card>
