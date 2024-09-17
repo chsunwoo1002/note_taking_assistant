@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Typography from "@/components/ui/typography";
 import { revalidatePath } from "next/cache";
-
+import { Trash2 } from "lucide-react";
 interface SegmentCollectionsProps {
   noteId: string;
 }
@@ -29,8 +29,8 @@ export default async function SegmentCollections({
             <div>{segment.contentText}</div>
             <div>last updated at {segment.createdAt.toLocaleDateString()}</div>
             <form>
-              <Button type="submit" variant="outline">
-                Delete
+              <Button type="submit" variant="ghost" size="icon">
+                <Trash2 className="h-4 w-4" />
               </Button>
             </form>
           </CardContent>

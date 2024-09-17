@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import Typography from "@/components/ui/typography";
 import { revalidatePath } from "next/cache";
+import { RefreshCw, Pencil } from "lucide-react";
 interface NoteProps {
   noteId: string;
 }
@@ -26,7 +27,7 @@ export default async function Document({ noteId }: NoteProps) {
         <Typography variant="h3">No document found</Typography>
         <form action={createDocument}>
           <Button type="submit" variant="outline">
-            Create Document
+            <RefreshCw className="h-4 w-4" />
           </Button>
         </form>
       </div>
@@ -36,11 +37,13 @@ export default async function Document({ noteId }: NoteProps) {
   return (
     <div>
       <form action={createDocument}>
-        <Button type="submit" variant="outline">
-          Regenerate
+        <Button type="submit" variant="ghost" size="icon">
+          <RefreshCw className="h-4 w-4" />
         </Button>
       </form>
-      <Button variant="outline">Edit</Button>
+      <Button variant="ghost" size="icon">
+        <Pencil className="h-4 w-4" />
+      </Button>
       <Card>
         {document.documents.map((note) => {
           if (note.typeName === "heading1") {
