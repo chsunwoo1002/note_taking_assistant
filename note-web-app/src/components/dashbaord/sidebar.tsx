@@ -3,9 +3,10 @@ import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import NoteCreationApi from "@/api/note.api";
+import { getSession } from "@auth0/nextjs-auth0";
 
 export default async function DashboardSidebar() {
-  const notes = await NoteCreationApi.getAllNotes();
+  const { notes } = await NoteCreationApi.getAllNotes();
 
   return (
     <Card className="w-64 mr-4 p-4 flex flex-col gap-2">

@@ -11,15 +11,9 @@ interface SegmentCollectionsProps {
 export default async function SegmentCollections({
   noteId,
 }: SegmentCollectionsProps) {
-  const noteSegments = await NoteCreationApi.getNoteSegments(noteId);
+  const noteContents = await NoteCreationApi.getNoteContents(noteId);
 
-  const deleteSegment = async (segmentId: string) => {
-    "use server";
-    await NoteCreationApi.deleteNoteSegment(segmentId);
-    revalidatePath(`/dashboard/${noteId}`);
-  };
-
-  if (noteSegments.length === 0) {
+  if (noteContents.contents.length === 0) {
     return (
       <div>
         <Typography variant="h3">No segments found</Typography>
@@ -29,12 +23,12 @@ export default async function SegmentCollections({
 
   return (
     <div>
-      {noteSegments.map((segment) => (
+      {noteContents.contents.map((segment) => (
         <Card key={segment.contentId}>
           <CardContent>
             <div>{segment.contentText}</div>
-            <div>last updated at {segment.createdAt}</div>
-            <form action={() => deleteSegment(segment.contentId)}>
+            <div>last updated at {segment.createdAt.toLocaleDateString()}</div>
+            <form>
               <Button type="submit" variant="outline">
                 Delete
               </Button>

@@ -1,6 +1,7 @@
 import NoteCreationApi from "@/api/note.api";
 import { Button } from "@/components/ui/button";
 import Typography from "@/components/ui/typography";
+import { getSession } from "@auth0/nextjs-auth0";
 import { revalidatePath } from "next/cache";
 
 interface SummaryProps {
@@ -8,13 +9,13 @@ interface SummaryProps {
 }
 
 export default async function Summary({ noteId }: SummaryProps) {
-  const noteSummary = await NoteCreationApi.getNoteSummary(noteId);
+  const noteSummary = await NoteCreationApi.getSummary(noteId);
 
   const createSummary = async () => {
     "use server";
     try {
       console.log("regenerate");
-      await NoteCreationApi.createNoteSummary(noteId);
+      await NoteCreationApi.createSummary(noteId);
 
       revalidatePath(`/dashboard/${noteId}`);
     } catch (error) {
