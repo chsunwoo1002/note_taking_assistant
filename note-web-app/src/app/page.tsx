@@ -4,21 +4,13 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const session = await getSession();
-  if (session?.user) {
-    redirect("/dashboard");
-  }
-
   return (
     <>
       <h1>Home</h1>
-      <Link href="/dashboard">
-        <Button variant="default">Dashboard</Button>
-      </Link>
-      <Link href="/signup">
+      <Link href="/api/auth/signup">
         <Button variant="default">Signup</Button>
       </Link>
-      <Link href="/login">
+      <Link href="/api/auth/login">
         <Button variant="default">Login</Button>
       </Link>
     </>
