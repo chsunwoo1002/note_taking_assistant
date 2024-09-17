@@ -1,57 +1,36 @@
 import { env } from "@/lib/env.config";
-
-interface NoteBaseInfo {
-  id: string;
-  title: string;
-  instruction: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface NoteSummary {
-  noteId: string;
-  createdAt: Date;
-  updatedAt: Date;
-  summaryId: string;
-  content: string;
-}
-
-interface NoteSegment {
-  contentId: string;
-  noteId: string;
-  contentTypeId: string;
-  contentText: string;
-  fileUrl: string | null;
-  timestamp: string | null;
-  sourceUrl: string | null;
-  createdAt: string;
-}
-
-interface NoteDocument {
-  resultId: string;
-  noteId: string;
-  resultTypeId: string;
-  fileUrl: string | null;
-  createdAt: string;
-  updatedAt: string;
-  orderIndex: 7;
-  content: string;
-  type: string;
-}
+import { validateSchema } from "@/schema/helper";
+import {
+  DocumentList,
+  DocumentListSchema,
+  Note,
+  NoteContentList,
+  NoteContentListSchema,
+  NoteList,
+  NoteListSchema,
+  NoteSchema,
+  Summary,
+  SummarySchema,
+} from "@/schema/note.schema";
+import { getSession } from "@auth0/nextjs-auth0";
 
 export default class NoteCreationApi {
   private static async sendRequest<T>(
     endpoint: string,
     method: string,
+    headers: Record<string, string> = {},
     data?: any
   ): Promise<T> {
-    const url = `${env.NOTE_CREATION_SERVER_URL}${endpoint}`;
+    const url = `${env.NOTE_API_URL}/notes/${endpoint}`;
+    const session = await getSession();
 
     try {
       const response = await fetch(url, {
         method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.apiAccessToken}`,
+          ...headers,
         },
         body: data ? JSON.stringify(data) : undefined,
       });
@@ -61,42 +40,59 @@ export default class NoteCreationApi {
       }
 
       const responseJson = await response.json();
-      return responseJson.data;
+      return responseJson;
     } catch (error) {
-      console.error(`Error in note API request to ${endpoint}:`, error);
       throw error;
     }
   }
 
-  static async getNoteBaseInfo(noteId: string): Promise<NoteBaseInfo> {
-    return this.sendRequest<NoteBaseInfo>(`/note/metadata/${noteId}`, "GET");
+  static async getNote(noteId: string): Promise<Note> {
+    const response = await this.sendRequest<Note>(`${noteId}`, "GET");
+    return validateSchema(NoteSchema, response);
   }
 
-  static async getNoteSummary(noteId: string): Promise<NoteSummary> {
-    return this.sendRequest<NoteSummary>(`/note/summary/${noteId}`, "GET");
+  static async getSummary(noteId: string): Promise<Summary> {
+    const response = await this.sendRequest<Summary>(
+      `${noteId}/summary`,
+      "GET"
+    );
+    return validateSchema(SummarySchema, response);
   }
 
-  static async createNoteSummary(noteId: string): Promise<NoteSummary> {
-    return this.sendRequest<NoteSummary>(`/note/summary/${noteId}`, "POST");
+  static async createSummary(noteId: string): Promise<Summary> {
+    const response = await this.sendRequest<Summary>(
+      `${noteId}/summary`,
+      "POST"
+    );
+    return validateSchema(SummarySchema, response);
   }
 
-  static async getDocument(noteId: string): Promise<NoteDocument[]> {
-    return this.sendRequest<NoteDocument[]>(`/note/document/${noteId}`, "GET");
+  static async getDocument(noteId: string): Promise<DocumentList> {
+    const response = await this.sendRequest<DocumentList>(
+      `${noteId}/document`,
+      "GET"
+    );
+    return validateSchema(DocumentListSchema, response);
   }
 
-  static async createDocument(noteId: string): Promise<NoteDocument[]> {
-    return this.sendRequest<NoteDocument[]>(`/note/document/${noteId}`, "POST");
+  static async createDocument(noteId: string): Promise<DocumentList> {
+    const response = await this.sendRequest<DocumentList>(
+      `${noteId}/document`,
+      "POST"
+    );
+    return validateSchema(DocumentListSchema, response);
   }
 
-  static async getNoteSegments(noteId: string): Promise<NoteSegment[]> {
-    return this.sendRequest<NoteSegment[]>(`/note/segments/${noteId}`, "GET");
+  static async getNoteContents(noteId: string): Promise<NoteContentList> {
+    const response = await this.sendRequest<NoteContentList>(
+      `${noteId}/content`,
+      "GET"
+    );
+    return validateSchema(NoteContentListSchema, response);
   }
 
-  static async deleteNoteSegment(segmentId: string): Promise<void> {
-    return this.sendRequest<void>(`/note/segment/${segmentId}`, "DELETE");
-  }
-
-  static async getAllNotes(): Promise<NoteBaseInfo[]> {
-    return this.sendRequest<NoteBaseInfo[]>(`/note/list/all`, "GET");
+  static async getAllNotes(): Promise<NoteList> {
+    const response = await this.sendRequest<NoteList>("", "GET");
+    return validateSchema(NoteListSchema, response);
   }
 }
