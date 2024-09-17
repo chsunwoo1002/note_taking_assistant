@@ -7,7 +7,7 @@ interface PageProps {
 }
 
 export default async function DashboardContent({ params }: PageProps) {
-  const noteBaseInfo = await NoteCreationApi.getNoteBaseInfo(params.noteId);
+  const noteBaseInfo = await NoteCreationApi.getNote(params.noteId);
 
   return (
     <Card className="flex flex-col gap-2 mt-4 p-4">
