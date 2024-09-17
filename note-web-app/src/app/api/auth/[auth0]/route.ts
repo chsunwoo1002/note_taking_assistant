@@ -1,47 +1,74 @@
-import { getSession, handleAuth, handleCallback } from "@auth0/nextjs-auth0";
-import { NextResponse } from "next/server";
+import {
+  AfterCallbackAppRoute,
+  handleAuth,
+  handleCallback,
+  handleLogin,
+  Session,
+} from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest } from "next/server";
+import { redirect } from "next/navigation";
+import AuthApi from "@/api/auth.api";
 
+const afterCallback = async (
+  req: NextRequest,
+  session: Session,
+  state?: { [key: string]: any }
+) => {
+  try {
+    const accessToken = session.accessToken;
+
+    if (!accessToken) {
+      throw new Error();
+    }
+
+    if (state?.action === "login") {
+      const apiAccessToken = await AuthApi.signIn(accessToken);
+      session.apiAccessToken = apiAccessToken.accessToken;
+    } else if (state?.action === "signup") {
+      const apiAccessToken = await AuthApi.signUp(accessToken);
+      session.apiAccessToken = apiAccessToken.accessToken;
+    } else {
+      throw new Error();
+    }
+
+    return session;
+  } catch (e) {
+    if (state) {
+      state.returnTo = "/something-went-wrong";
+    }
+    return;
+  }
+};
 export const GET = handleAuth({
+  login: handleLogin({
+    returnTo: "/dashboard",
+    getLoginState: (req: NextRequest) => {
+      return {
+        action: "login",
+      };
+    },
+  }),
+  signup: handleLogin({
+    authorizationParams: {
+      screen_hint: "signup",
+    },
+    returnTo: "/dashboard",
+    getLoginState: (req: NextRequest) => {
+      return {
+        action: "signup",
+      };
+    },
+  }),
   callback: async (req: NextApiRequest, res: NextApiResponse) => {
     try {
-      // Perform the normal Auth0 callback handling
-      await handleCallback(req, res);
+      const session = await handleCallback(req, res, {
+        afterCallback,
+      });
 
-      // Get the user's session
-      const session = await getSession(req, res);
-
-      if (session?.accessToken) {
-        // Send the access token to your backend service
-        const backendResponse = await fetch("http://localhost:8080/note/test", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ accessToken: session.accessToken }),
-        });
-
-        const customJWT = await backendResponse.json();
-        const jwt = customJWT.data.jwt;
-
-        // Set the JWT as an HTTP-only cookie
-        const response = NextResponse.redirect(new URL("/dashboard", req.url));
-        response.cookies.set("jwt", jwt, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
-          maxAge: 3600, // 1 hour, adjust as needed
-          path: "/",
-        });
-
-        return response;
-      }
+      return session;
     } catch (error) {
-      console.error(error);
-      return NextResponse.json(
-        { error: "Authentication failed" },
-        { status: 500 }
-      );
+      return res.redirect("/something-went-wrong");
     }
   },
 });
