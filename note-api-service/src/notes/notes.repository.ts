@@ -25,6 +25,7 @@ import { CreateContentDto } from './dto/create-content.dto';
 import { BaseNoteDto } from './dto/base-note.dto';
 import { GenerateDocumentDto } from 'src/content-generation/dto/generate-document.dto';
 import { InsertNoteResult } from 'src/database/database.type';
+import { DeleteContentDto } from './dto/delete-note-content.dto';
 
 @Injectable()
 export class NotesRepository {
@@ -188,6 +189,14 @@ export class NotesRepository {
       ...result,
       typeName: createContentDto.contentType,
     });
+  }
+
+  async deleteContent(deleteContentDto: DeleteContentDto) {
+    await this.db
+      .getDatabase()
+      .deleteFrom('noteContents')
+      .where('contentId', '=', deleteContentDto.contentId)
+      .execute();
   }
 
   async findAllContents(findContentsDto: BaseNoteDto) {

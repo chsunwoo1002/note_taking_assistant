@@ -15,6 +15,7 @@ import { FindDocumentDto } from './dto/find-document.dto';
 import { CreateContentDto } from './dto/create-content.dto';
 import { FindContentsDto } from './dto/find-content.dto';
 import { BaseNoteDto } from './dto/base-note.dto';
+import { DeleteContentDto } from './dto/delete-note-content.dto';
 
 describe('NotesService', () => {
   let service: NotesService;
@@ -32,6 +33,7 @@ describe('NotesService', () => {
       createDocument: jest.fn(),
       findOneDocument: jest.fn(),
       createContent: jest.fn(),
+      deleteContent: jest.fn(),
       findAllContents: jest.fn(),
     };
 
@@ -356,6 +358,46 @@ describe('NotesService', () => {
         findContentsDto,
       );
       expect(result).toBe(contents);
+    });
+  });
+
+  describe('deleteContent', () => {
+    it('should delete content for a note', async () => {
+      // Arrange
+      const deleteContentDto: DeleteContentDto = {
+        contentId: '2',
+      };
+
+      (notesRepositoryMock.deleteContent as jest.Mock).mockResolvedValue(
+        undefined,
+      );
+
+      // Act
+      const result = await service.deleteContent(deleteContentDto);
+
+      // Assert
+      expect(notesRepositoryMock.deleteContent).toHaveBeenCalledWith(
+        deleteContentDto,
+      );
+      expect(result).toBe(undefined);
+    });
+
+    it('should handle errors if content deletion fails', async () => {
+      // Arrange
+      const deleteContentDto: DeleteContentDto = {
+        contentId: '2',
+      };
+      const error = new Error('Content deletion failed');
+
+      (notesRepositoryMock.deleteContent as jest.Mock).mockRejectedValue(error);
+
+      // Act & Assert
+      await expect(service.deleteContent(deleteContentDto)).rejects.toThrow(
+        error,
+      );
+      expect(notesRepositoryMock.deleteContent).toHaveBeenCalledWith(
+        deleteContentDto,
+      );
     });
   });
 });

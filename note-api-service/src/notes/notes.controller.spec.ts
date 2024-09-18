@@ -13,6 +13,7 @@ import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 import { CreateContentDto } from './dto/create-content.dto';
 import { FindContentsDto } from './dto/find-content.dto';
 import { BaseNoteDto } from './dto/base-note.dto';
+import { DeleteContentDto } from './dto/delete-note-content.dto';
 
 describe('NotesController', () => {
   let controller: NotesController;
@@ -29,6 +30,7 @@ describe('NotesController', () => {
       findOneDocument: jest.fn(),
       createContent: jest.fn(),
       findAllContents: jest.fn(),
+      deleteContent: jest.fn(),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -237,6 +239,25 @@ describe('NotesController', () => {
         findContentsDto,
       );
       expect(result).toBe(contents);
+    });
+  });
+
+  describe('deleteContent', () => {
+    it('should delete content and return no content', async () => {
+      // Arrange
+      const deleteContentDto: DeleteContentDto = { contentId: '1' };
+      (notesServiceMock.deleteContent as jest.Mock).mockResolvedValue(
+        undefined,
+      );
+
+      // Act
+      const result = await controller.deleteContent(deleteContentDto);
+
+      // Assert
+      expect(notesServiceMock.deleteContent).toHaveBeenCalledWith(
+        deleteContentDto,
+      );
+      expect(result).toBeUndefined();
     });
   });
 });
