@@ -39,6 +39,10 @@ export default class NoteCreationApi {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      if (method === "DELETE" || response.status === 204) {
+        return undefined as T;
+      }
+
       const responseJson = await response.json();
       return responseJson;
     } catch (error) {
@@ -81,6 +85,10 @@ export default class NoteCreationApi {
       "POST"
     );
     return validateSchema(DocumentListSchema, response);
+  }
+
+  static async deleteContent(contentId: string): Promise<void> {
+    await this.sendRequest<void>(`content/${contentId}`, "DELETE");
   }
 
   static async getNoteContents(noteId: string): Promise<NoteContentList> {
