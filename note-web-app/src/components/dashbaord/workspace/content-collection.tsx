@@ -14,10 +14,19 @@ export default async function SegmentCollections({
 }: SegmentCollectionsProps) {
   const noteContents = await NoteCreationApi.getNoteContents(noteId);
 
+  async function handleDeleteContent(formData: FormData) {
+    "use server";
+    const contentId = formData.get("contentId") as string;
+    const noteId = formData.get("noteId") as string;
+
+    await NoteCreationApi.deleteContent(contentId);
+    revalidatePath(`/dashboard/${noteId}`);
+  }
+
   if (noteContents.contents.length === 0) {
     return (
       <div>
-        <Typography variant="h3">No segments found</Typography>
+        <Typography variant="h3">No Content found</Typography>
       </div>
     );
   }
@@ -29,7 +38,9 @@ export default async function SegmentCollections({
           <CardContent>
             <div>{segment.contentText}</div>
             <div>last updated at {segment.createdAt.toLocaleDateString()}</div>
-            <form>
+            <form action={handleDeleteContent}>
+              <input type="hidden" name="contentId" value={segment.contentId} />
+              <input type="hidden" name="noteId" value={noteId} />
               <IconButton
                 type="submit"
                 icon={Trash2}

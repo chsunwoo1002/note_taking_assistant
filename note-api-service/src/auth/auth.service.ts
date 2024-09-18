@@ -49,10 +49,7 @@ export class AuthService {
   }
 
   private async createJwtToken(user: UserInfoDto) {
-    const accessToken = await this.jwtService.sign(
-      { userId: user.userId },
-      { expiresIn: '1d' },
-    );
+    const accessToken = await this.jwtService.sign({ userId: user.userId });
 
     const tokenDto = await this.validationService.transformAndValidate(JwtDto, {
       accessToken,

@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+} from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { FindNoteDto } from './dto/find-note.dto';
@@ -11,6 +20,7 @@ import { AuthenticatedUserDto } from 'src/auth/dto/authenticated-user.dto';
 import { CreateContentDto } from './dto/create-content.dto';
 import { FindContentsDto } from './dto/find-content.dto';
 import { BaseNoteDto } from './dto/base-note.dto';
+import { DeleteContentDto } from './dto/delete-note-content.dto';
 
 @Controller('notes')
 export class NotesController {
@@ -60,6 +70,12 @@ export class NotesController {
     @Body() createContentDto: CreateContentDto,
   ) {
     return this.notesService.createContent(baseNoteDto, createContentDto);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('/content/:contentId')
+  deleteContent(@Param() deleteContentDto: DeleteContentDto) {
+    return this.notesService.deleteContent(deleteContentDto);
   }
 
   @Get('/:noteId/content')

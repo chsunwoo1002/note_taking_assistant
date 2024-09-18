@@ -13,6 +13,7 @@ import { CreateContentDto } from './dto/create-content.dto';
 import { FindContentsDto } from './dto/find-content.dto';
 import { ValidationService } from 'src/validation/validation.service';
 import { BaseNoteDto } from './dto/base-note.dto';
+import { DeleteContentDto } from './dto/delete-note-content.dto';
 
 @Injectable()
 export class NotesService {
@@ -69,6 +70,10 @@ export class NotesService {
 
   createContent(baseNoteDto: BaseNoteDto, createContentDto: CreateContentDto) {
     return this.notesRepository.createContent(baseNoteDto, createContentDto);
+  }
+
+  deleteContent(deleteContentDto: DeleteContentDto) {
+    return this.notesRepository.deleteContent(deleteContentDto);
   }
 
   findAllContents(findContentsDto: FindContentsDto) {

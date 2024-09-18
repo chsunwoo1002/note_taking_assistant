@@ -27,6 +27,7 @@ import {
   NoteContentDto,
   NoteContentListDto,
 } from './dto/note.dto';
+import { DeleteContentDto } from './dto/delete-note-content.dto';
 
 describe('NotesRepository', () => {
   let repository: NotesRepository;
@@ -777,6 +778,67 @@ describe('NotesRepository', () => {
         instruction: note.instruction,
         contents,
       });
+    });
+  });
+
+  describe('deleteContent', () => {
+    it('should delete content for a note', async () => {
+      // Arrange
+      const deleteContentDto: DeleteContentDto = { contentId: '1' };
+
+      const deleteQueryMock = {
+        where: jest.fn().mockReturnThis(),
+        execute: jest.fn().mockResolvedValue(undefined),
+      };
+
+      const dbMock = {
+        deleteFrom: jest.fn().mockReturnValue(deleteQueryMock),
+      };
+
+      (dbServiceMock.getDatabase as jest.Mock).mockReturnValue(dbMock);
+
+      // Act
+      await repository.deleteContent(deleteContentDto);
+
+      // Assert
+      expect(dbServiceMock.getDatabase).toHaveBeenCalled();
+      expect(dbMock.deleteFrom).toHaveBeenCalledWith('noteContents');
+      expect(deleteQueryMock.where).toHaveBeenCalledWith(
+        'contentId',
+        '=',
+        deleteContentDto.contentId,
+      );
+      expect(deleteQueryMock.execute).toHaveBeenCalled();
+    });
+
+    it('should throw an error if deletion fails', async () => {
+      // Arrange
+      const deleteContentDto: DeleteContentDto = { contentId: '1' };
+
+      const deleteQueryMock = {
+        where: jest.fn().mockReturnThis(),
+        execute: jest.fn().mockRejectedValue(new Error('Deletion failed')),
+      };
+
+      const dbMock = {
+        deleteFrom: jest.fn().mockReturnValue(deleteQueryMock),
+      };
+
+      (dbServiceMock.getDatabase as jest.Mock).mockReturnValue(dbMock);
+
+      // Act & Assert
+      await expect(repository.deleteContent(deleteContentDto)).rejects.toThrow(
+        'Deletion failed',
+      );
+
+      expect(dbServiceMock.getDatabase).toHaveBeenCalled();
+      expect(dbMock.deleteFrom).toHaveBeenCalledWith('noteContents');
+      expect(deleteQueryMock.where).toHaveBeenCalledWith(
+        'contentId',
+        '=',
+        deleteContentDto.contentId,
+      );
+      expect(deleteQueryMock.execute).toHaveBeenCalled();
     });
   });
 });
