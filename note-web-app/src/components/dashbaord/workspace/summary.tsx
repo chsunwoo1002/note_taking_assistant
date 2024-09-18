@@ -4,6 +4,7 @@ import Typography from "@/components/ui/typography";
 import { getSession } from "@auth0/nextjs-auth0";
 import { revalidatePath } from "next/cache";
 import { Pencil, RefreshCw } from "lucide-react";
+import { IconButton } from "@/components/common/icon-button";
 interface SummaryProps {
   noteId: string;
 }
@@ -28,9 +29,13 @@ export default async function Summary({ noteId }: SummaryProps) {
       <div>
         <Typography variant="h3">No summary found</Typography>
         <form action={createSummary}>
-          <Button type="submit" variant="outline">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
+          <IconButton
+            type="submit"
+            icon={RefreshCw}
+            ariaLabel="Create Summary"
+            tooltipContent="Create Summary"
+            variant="ghost"
+          />
         </form>
       </div>
     );
@@ -38,13 +43,20 @@ export default async function Summary({ noteId }: SummaryProps) {
   return (
     <div>
       <form action={createSummary}>
-        <Button type="submit" variant="ghost" size="icon">
-          <RefreshCw className="h-4 w-4" />
-        </Button>
+        <IconButton
+          type="submit"
+          icon={RefreshCw}
+          ariaLabel="Create Summary"
+          tooltipContent="Create Summary"
+          variant="ghost"
+        />
       </form>
-      <Button variant="ghost" size="icon">
-        <Pencil className="h-4 w-4" />
-      </Button>
+      <IconButton
+        icon={Pencil}
+        ariaLabel="Edit Summary"
+        tooltipContent="Edit Summary"
+        variant="ghost"
+      />
       <Typography variant="p">{noteSummary.content}</Typography>
     </div>
   );

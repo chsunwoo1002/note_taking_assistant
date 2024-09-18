@@ -3,27 +3,32 @@ import { Button } from "../ui/button";
 import { Card } from "../ui/card";
 import { Input } from "../ui/input";
 import { Search, Settings, LogOut } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
+import { LabeledIconButton } from "../common/labeled-icon-button";
+import { IconButton } from "../common/icon-button";
 
 export default function DashboardHeader() {
   return (
     <Card className="flex justify-between gap-2 p-4 border">
       <div className="flex items-center gap-2">
         <Input placeholder="Search" className="mr-4" />
-        <Button variant="ghost" size="icon">
-          <Search className="h-4 w-4" />
-        </Button>
+        <IconButton
+          icon={Search}
+          ariaLabel="Search"
+          tooltipContent="Search"
+          variant="ghost"
+        />
       </div>
       <div className="flex items-center gap-2">
         <Link href="/api/auth/logout">
-          <Button variant="outline" size="lg">
-            Logout
-            <LogOut className="h-4 w-4" />
-            <span className="sr-only">Logout</span>
-          </Button>
+          <LabeledIconButton icon={LogOut} label="Logout" />
         </Link>
-        <Button variant="ghost" size="icon">
-          <Settings className="h-4 w-4" />
-        </Button>
+        <IconButton
+          icon={Settings}
+          ariaLabel="Settings"
+          tooltipContent="Settings"
+          variant="ghost"
+        />
       </div>
     </Card>
   );
