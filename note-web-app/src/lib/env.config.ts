@@ -8,6 +8,7 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: z.string(),
     AUTH_GOOGLE_SECRET: z.string(),
     AUTH_URL: z.string().url(),
+    JWT_SECRET: z.string(),
   },
   client: {},
   runtimeEnv: {
@@ -16,5 +17,6 @@ export const env = createEnv({
     AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
     AUTH_URL: process.env.AUTH_URL,
+    JWT_SECRET: process.env.JWT_SECRET,
   },
 });

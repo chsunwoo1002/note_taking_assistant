@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { Button } from "../ui/button";
-import { Card } from "../ui/card";
-import { Input } from "../ui/input";
+import { Button } from "../../../components/ui/button";
+import { Card } from "../../../components/ui/card";
+import { Input } from "../../../components/ui/input";
 import { Search, Settings, LogOut } from "lucide-react";
-import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
-import { LabeledIconButton } from "../common/labeled-icon-button";
-import { IconButton } from "../common/icon-button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "../../../components/ui/tooltip";
+import { LabeledIconButton } from "../../../components/common/labeled-icon-button";
+import { IconButton } from "../../../components/common/icon-button";
 
 export default function DashboardHeader() {
   return (

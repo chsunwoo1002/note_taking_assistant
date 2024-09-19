@@ -1,5 +1,5 @@
 import Typography from "@/components/ui/typography";
-import NoteWorkspace from "@/components/dashbaord/note-workspace";
+import NoteWorkspace from "@/app/dashboard/dashbaord/note-workspace";
 import NoteCreationApi from "@/api/note.api";
 import { Card } from "@/components/ui/card";
 interface PageProps {
