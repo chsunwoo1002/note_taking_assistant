@@ -1,5 +1,4 @@
 import {
-  AfterCallbackAppRoute,
   handleAuth,
   handleCallback,
   handleLogin,
@@ -7,8 +6,8 @@ import {
 } from "@auth0/nextjs-auth0";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextRequest } from "next/server";
-import { redirect } from "next/navigation";
 import AuthApi from "@/api/auth.api";
+import { storeSession } from "../../extension/extension-session";
 
 const afterCallback = async (
   req: NextRequest,
@@ -17,7 +16,6 @@ const afterCallback = async (
 ) => {
   try {
     const accessToken = session.accessToken;
-
     if (!accessToken) {
       throw new Error();
     }
@@ -32,6 +30,10 @@ const afterCallback = async (
       throw new Error();
     }
 
+    // TODO: create more create flow for the chrome extension
+    const extensionToken = await storeSession(session);
+    session.extensionToken = extensionToken;
+
     return session;
   } catch (e) {
     if (state) {
@@ -40,6 +42,7 @@ const afterCallback = async (
     return;
   }
 };
+
 export const GET = handleAuth({
   login: handleLogin({
     returnTo: "/dashboard",

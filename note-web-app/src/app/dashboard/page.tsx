@@ -1,3 +1,5 @@
+import { ExtensionTokenHandler } from "./components/extension-token-handler";
+
 export interface Note {
   id: number;
   title: string;
@@ -9,5 +11,10 @@ export interface DashboardProps {
 }
 
 export default async function Dashboard() {
-  return <div>Dashboard</div>;
+  return (
+    <div>
+      <ExtensionTokenHandler />
+      Dashboard
+    </div>
+  );
 }
