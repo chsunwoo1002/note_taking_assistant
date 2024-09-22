@@ -10,6 +10,7 @@ class NoteApiService {
   private static async sendRequest<T>(
     endpoint: string,
     method: string,
+    token: string,
     data?: any
   ): Promise<T> {
     const url = `${API_URL}${endpoint}`
@@ -18,7 +19,8 @@ class NoteApiService {
       const response = await fetch(url, {
         method,
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "x-extension-token": token
         },
         body: data ? JSON.stringify(data) : undefined
       })
@@ -29,30 +31,38 @@ class NoteApiService {
 
       const responseJson = await response.json()
       console.log("response json", responseJson)
-      return responseJson.data
+      return responseJson
     } catch (error) {
       console.error(`Error in note API request to ${endpoint}:`, error)
       throw error
     }
   }
 
-  static async addContent(data: AddTextRequestParams): Promise<void> {
+  static async addContent(
+    data: AddTextRequestParams,
+    token: string
+  ): Promise<void> {
     const { noteId, content, contentType } = data
-    return this.sendRequest(`/note/segment/${noteId}`, "POST", {
+    return this.sendRequest(`/api/extension/${noteId}/content`, "POST", token, {
       content,
       contentType
     })
   }
 
-  static async createNote(data: CreateNoteRequestParams): Promise<Note> {
-    return this.sendRequest("/note/metadata", "POST", data).then((note) => {
-      console.log("note before parse", note)
-      return noteSchema.parse(note)
-    })
+  static async createNote(
+    data: CreateNoteRequestParams,
+    token: string
+  ): Promise<Note> {
+    return this.sendRequest("/api/extension", "POST", token, data).then(
+      (note) => {
+        console.log("note before parse", note)
+        return noteSchema.parse(note)
+      }
+    )
   }
 
-  static async getNotes(): Promise<Note[]> {
-    return this.sendRequest<Note[]>("/note/list/all", "GET")
+  static async getNotes(token: string): Promise<Note[]> {
+    return this.sendRequest<Note[]>("/api/extension", "GET", token)
   }
 }
 

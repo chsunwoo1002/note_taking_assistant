@@ -33,8 +33,12 @@ export const noteSchema = z.object({
   updatedAt
 })
 
+export const notesSchema = z.object({
+  notes: z.array(noteSchema)
+})
 export type GetNoteRequestParams = z.infer<typeof getNoteRequestParams>
 export type AddTextRequestParams = z.infer<typeof addTextRequestBody>
 export type CreateNoteRequestParams = z.infer<typeof createNoteRequestBody>
 export type Note = z.infer<typeof noteSchema>
 export type TrackPermission = z.infer<typeof trackPermission>
+export type Notes = z.infer<typeof notesSchema>

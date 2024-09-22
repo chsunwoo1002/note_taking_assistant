@@ -11,7 +11,7 @@ import Main from "~popup/Main"
 import NoteListMain from "~popup/NoteListMain"
 import { popup } from "~styles/constant"
 import theme from "~styles/theme"
-import type { Note } from "~types/note.types"
+import type { Note, Notes } from "~types/note.types"
 import { API_URL, WEB_VIEW_URL } from "~utils/envConfig"
 
 function IndexPopup() {
@@ -19,7 +19,7 @@ function IndexPopup() {
     key: "permission",
     instance: new Storage({ area: "local" })
   })
-  const [notes] = useStorage<Note[]>({
+  const [notes] = useStorage<Notes>({
     key: "notes",
     instance: new Storage({ area: "local" })
   })
@@ -29,9 +29,6 @@ function IndexPopup() {
   })
   const [view, setView] = useState<"list" | "add">("list")
 
-  useEffect(() => {
-    console.log("notes", notes)
-  }, [notes])
   const onPermissionToggle = () => {
     sendToBackground({
       name: "setPermission",

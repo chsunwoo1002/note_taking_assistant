@@ -1,9 +1,9 @@
-import type { Note } from "~types/note.types"
+import type { Note, Notes } from "~types/note.types"
 
 import NoteCard from "./components/cards/NoteCard"
 
 interface NoteListMainProps {
-  notes: Note[] | undefined
+  notes: Notes | undefined
   selectedNote: Note | undefined
   onNoteClick: (note: Note) => void
 }
@@ -15,8 +15,8 @@ const NoteListMain: React.FC<NoteListMainProps> = ({
 }) => {
   return (
     <div className="overflow-y-scroll">
-      {notes && notes.length > 0 ? (
-        notes.map((note) => (
+      {notes && notes.notes.length > 0 ? (
+        notes.notes.map((note) => (
           <NoteCard
             key={note.noteId}
             note={note}

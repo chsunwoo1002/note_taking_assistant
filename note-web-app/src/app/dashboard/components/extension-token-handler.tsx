@@ -21,10 +21,23 @@ export const ExtensionTokenHandler = () => {
 
         console.log("location", location);
         console.log("extensionToken", extensionToken);
-        // Send the extensionToken to the Chrome extension
+        console.log("chrome", chrome);
+        chrome.runtime.sendMessage(
+          "ekohbladgiahclgddnackbdkcjnkbojl",
+          {
+            type: "EXTENSION_TOKEN",
+            token: extensionToken,
+          },
+          (response) => {
+            console.log("response", response);
+          }
+        );
         // window.postMessage(
-        //   { type: "EXTENSION_TOKEN", token: extensionToken },
-        //   "*" // set the origin to chrome extension
+        //   {
+        //     type: "EXTENSION_TOKEN",
+        //     token: extensionToken,
+        //   },
+        //   "chrome-extension://ekohbladgiahclgddnackbdkcjnkbojl"
         // );
       } catch (error) {
         console.error("Error fetching extension token:", error);
