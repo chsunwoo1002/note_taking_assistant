@@ -1,37 +1,16 @@
-import { signUpAction } from "@/app/actions";
+import {
+  signUpAction,
+  signInWithGoogleAction,
+} from "@/app/(auth-pages)/actions";
 import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
+import { SubmitButton } from "@/components/buttons/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+
 import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 
 export default function Signup({ searchParams }: { searchParams: Message }) {
-  const signUpWithGoogle = async () => {
-    "use server";
-
-    const superbase = createClient();
-
-    const { data, error } = await superbase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: "http://localhost:3000/auth/callback",
-        queryParams: {
-          access_type: "offline",
-          prompt: "consent",
-        },
-      },
-    });
-
-    if (error) {
-      console.error(error);
-    } else {
-      return redirect(data.url);
-    }
-  };
-
   if ("message" in searchParams) {
     return (
       <div className="w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
@@ -41,7 +20,7 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
   }
 
   return (
-    <>
+    <div className="flex flex-row gap-4 justify-center">
       <form className="flex flex-col min-w-64 max-w-64 mx-auto">
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm text text-foreground">
@@ -67,10 +46,10 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
           <FormMessage message={searchParams} />
         </div>
       </form>
-      <form action={signUpWithGoogle}>
+      <Separator orientation="vertical" className="my-4" />
+      <form action={signInWithGoogleAction}>
         <button type="submit">Sign up with Google</button>
-      </form>{" "}
-      <SmtpMessage />
-    </>
+      </form>
+    </div>
   );
 }
