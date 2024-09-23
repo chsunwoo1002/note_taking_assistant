@@ -7,8 +7,8 @@ import { SubmitButton } from "@/components/buttons/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-
 import Link from "next/link";
+import { LabeledIconButton } from "@/components/buttons/labeled-icon-button";
 
 export default function Signup({ searchParams }: { searchParams: Message }) {
   if ("message" in searchParams) {
@@ -20,8 +20,8 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
   }
 
   return (
-    <div className="flex flex-row gap-4 justify-center">
-      <form className="flex flex-col min-w-64 max-w-64 mx-auto">
+    <div className="flex flex-col space-y-4">
+      <form className="flex-1 flex flex-col min-w-64">
         <h1 className="text-2xl font-medium">Sign up</h1>
         <p className="text-sm text text-foreground">
           Already have an account?{" "}
@@ -46,9 +46,14 @@ export default function Signup({ searchParams }: { searchParams: Message }) {
           <FormMessage message={searchParams} />
         </div>
       </form>
-      <Separator orientation="vertical" className="my-4" />
-      <form action={signInWithGoogleAction}>
-        <button type="submit">Sign up with Google</button>
+      <Separator className="my-4" />
+      <form className="flex-1 flex flex-col min-w-64">
+        <SubmitButton
+          formAction={signInWithGoogleAction}
+          pendingText="Signing up with Google..."
+        >
+          Sign up with Google
+        </SubmitButton>
       </form>
     </div>
   );
