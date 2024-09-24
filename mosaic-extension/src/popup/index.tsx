@@ -1,7 +1,13 @@
 import { createNote, getNotes } from "@/api/note"
+import { Button } from "@/components/ui/button"
 import { useFeatureToggle } from "@/hooks/useFeatureToggle"
 import { useUser } from "@/hooks/useUser"
 import { useEffect, useState } from "react"
+
+import "@/style.css"
+
+import { Label } from "../components/ui/label"
+import { Switch } from "../components/ui/switch"
 
 export default function IndexPopup() {
   const { user } = useUser()
@@ -49,8 +55,10 @@ export default function IndexPopup() {
   return (
     <div>
       Hello World! {user?.email}
-      <div>active {active ? "true" : "false"}</div>
-      <button onClick={toggle}>Toggle </button>
+      <div className="flex items-center space-x-2">
+        <Switch id="active" checked={active} onCheckedChange={toggle} />
+        <Label htmlFor="active">Active</Label>
+      </div>
       <div>
         list
         {notes.map((note) => (
