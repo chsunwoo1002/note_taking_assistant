@@ -5,14 +5,14 @@ import { LucideIcon } from "lucide-react";
 import withTooltip from "@/components/hoc/withTooltip";
 
 interface IconButtonProps extends Omit<ButtonProps, "children" | "size"> {
-  icon: LucideIcon;
+  icon: React.ReactNode;
   ariaLabel: string;
 }
 
 function BaseIconButton({ icon: Icon, ariaLabel, ...props }: IconButtonProps) {
   return (
     <Button {...props} aria-label={ariaLabel} size="icon">
-      <Icon className="h-4 w-4" />
+      {Icon}
     </Button>
   );
 }
