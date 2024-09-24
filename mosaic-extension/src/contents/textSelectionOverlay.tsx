@@ -1,3 +1,4 @@
+import { useFeatureToggle } from "@/hooks/useFeatureToggle"
 import { useUser } from "@/hooks/useUser"
 import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useState } from "react"
@@ -8,13 +9,11 @@ export const config: PlasmoCSConfig = {
 
 const textSelectionOverlay = () => {
   const [position, setPosition] = useState({ top: 0, left: 0 })
-  const [isVisible, setIsVisible] = useState(false)
   const [selectedText, setSelectedText] = useState<any>()
   const { user } = useUser()
-
+  const { active } = useFeatureToggle()
   useEffect(() => {
     const handleSelection = () => {
-      console.log("selection")
       const selection = window.getSelection()
       if (selection && selection.toString().length > 0) {
         const range = selection.getRangeAt(0)
@@ -24,9 +23,7 @@ const textSelectionOverlay = () => {
           left: rect.right + window.scrollX
         })
         setSelectedText(selection)
-        setIsVisible(true)
       } else {
-        setIsVisible(false)
         setSelectedText(null)
       }
     }
@@ -37,7 +34,7 @@ const textSelectionOverlay = () => {
     }
   }, [])
 
-  //   if (!isVisible) return null
+  if (!active) return null
 
   return (
     <div
