@@ -1,10 +1,9 @@
 import { supabase } from "@/core/supabase"
+import { useUser } from "@/hooks/useUser"
 import type { Provider } from "@supabase/supabase-js"
 import { useEffect, useState } from "react"
 
 import { sendToBackground } from "@plasmohq/messaging"
-
-import { useUser } from "./hooks/useUser"
 
 function IndexOptions() {
   const { user, setUser } = useUser()
