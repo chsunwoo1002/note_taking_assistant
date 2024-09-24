@@ -1,19 +1,13 @@
 import { supabase } from "@/core/supabase"
-import type { Provider, User } from "@supabase/supabase-js"
+import type { Provider } from "@supabase/supabase-js"
 import { useEffect, useState } from "react"
 
 import { sendToBackground } from "@plasmohq/messaging"
-import { Storage } from "@plasmohq/storage"
-import { useStorage } from "@plasmohq/storage/hook"
+
+import { useUser } from "./hooks/useUser"
 
 function IndexOptions() {
-  const [user, setUser] = useStorage<User>({
-    key: "user",
-    instance: new Storage({
-      area: "local"
-    })
-  })
-
+  const { user, setUser } = useUser()
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
 

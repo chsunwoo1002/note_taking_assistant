@@ -1,14 +1,6 @@
-import type { User } from "@supabase/supabase-js"
-
-import { Storage } from "@plasmohq/storage"
-import { useStorage } from "@plasmohq/storage/hook"
+import { useUser } from "./hooks/useUser"
 
 export default function IndexPopup() {
-  const [user, setUser] = useStorage<User>({
-    key: "user",
-    instance: new Storage({
-      area: "local"
-    })
-  })
-  return <div>Hello World {user?.email}</div>
+  const { user } = useUser()
+  return <div>Hello World! {user?.email}</div>
 }

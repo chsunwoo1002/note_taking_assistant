@@ -1,9 +1,6 @@
-import type { User } from "@supabase/supabase-js"
+import { useUser } from "@/hooks/useUser"
 import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useState } from "react"
-
-import { Storage } from "@plasmohq/storage"
-import { useStorage } from "@plasmohq/storage/hook"
 
 export const config: PlasmoCSConfig = {
   matches: ["<all_urls>"]
@@ -13,12 +10,7 @@ const textSelectionOverlay = () => {
   const [position, setPosition] = useState({ top: 0, left: 0 })
   const [isVisible, setIsVisible] = useState(false)
   const [selectedText, setSelectedText] = useState<any>()
-  const [user, setUser] = useStorage<User>({
-    key: "user",
-    instance: new Storage({
-      area: "local"
-    })
-  })
+  const { user } = useUser()
 
   useEffect(() => {
     const handleSelection = () => {
