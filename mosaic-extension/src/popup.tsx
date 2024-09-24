@@ -4,6 +4,19 @@ import { useUser } from "./hooks/useUser"
 export default function IndexPopup() {
   const { user } = useUser()
   const { active, toggle } = useFeatureToggle()
+
+  if (user === null)
+    return (
+      <div>
+        <button
+          onClick={() => {
+            window.open("options.html", "_blank")
+          }}>
+          Login
+        </button>
+      </div>
+    )
+
   return (
     <div>
       Hello World! {user?.email}
