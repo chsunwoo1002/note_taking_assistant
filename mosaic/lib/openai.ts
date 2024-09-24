@@ -25,7 +25,7 @@ export const createNoteResult = async (noteId: string) => {
     note.data.instruction,
     noteContents.data
       .map((content) => content.content)
-      .filter((content) => content !== null)
+      .filter((content) => content !== null) as string[]
   );
 
   if (generatedNoteResult.error) {
