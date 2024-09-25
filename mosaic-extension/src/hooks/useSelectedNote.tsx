@@ -3,8 +3,8 @@ import type { User } from "@supabase/supabase-js"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
-export const useSelectedNote = () => {
-  const [selectedNote, setSelectedNote] = useStorage<string>(
+export const useSelectedNoteId = () => {
+  const [selectedNoteId, setSelectedNoteId] = useStorage<string>(
     {
       key: "selectedNote",
       instance: new Storage({
@@ -14,5 +14,5 @@ export const useSelectedNote = () => {
     (v) => (v === undefined ? null : v)
   )
 
-  return { selectedNote, setSelectedNote }
+  return { selectedNoteId, setSelectedNoteId }
 }
