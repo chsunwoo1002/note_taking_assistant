@@ -272,6 +272,7 @@ export type Database = {
         Args: {
           p_note_id: string
           p_content: string
+          p_source_url: string
           p_content_type: string
         }
         Returns: undefined

@@ -24,7 +24,7 @@ import { Card } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { useSelectedNote } from "@/hooks/useSelectedNote"
+import { useSelectedNoteId } from "@/hooks/useSelectedNote"
 
 const formSchema = z.object({
   title: z.string().min(1),
@@ -34,7 +34,7 @@ const formSchema = z.object({
 export default function IndexPopup() {
   const { user } = useUser()
   const [notes, setNotes] = useState<any[]>([])
-  const { selectedNote, setSelectedNote } = useSelectedNote()
+  const { selectedNoteId, setSelectedNoteId } = useSelectedNoteId()
   const [mode, setMode] = useState<"edit" | "create">("edit")
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,7 +51,7 @@ export default function IndexPopup() {
         console.error(error)
         // TODO: show error to user
       } else {
-        setSelectedNote(data.id)
+        setSelectedNoteId(data.id)
         setMode("edit")
         setNotes([...notes, data])
       }
@@ -152,10 +152,10 @@ export default function IndexPopup() {
               <div className="flex-col gap-2">
                 {notes.map((note) => (
                   <Button
-                    variant={selectedNote === note.id ? "secondary" : "ghost"}
+                    variant={selectedNoteId === note.id ? "secondary" : "ghost"}
                     className="flex w-11/12 justify-start truncate"
                     key={note.id}
-                    onClick={() => setSelectedNote(note.id)}>
+                    onClick={() => setSelectedNoteId(note.id)}>
                     {note.title}
                     {/* <p className="text-ellipsis"></p> */}
                   </Button>

@@ -24,11 +24,13 @@ export const getNotes = async () => {
 export const createNoteContent = async (
   noteId: string,
   content: string,
-  contentType: "text" | "image" | "video" | "audio" | "file"
+  sourceUrl: string,
+  contentType: "text" | "image" | "video" | "audio" | "file" = "text"
 ) => {
   return supabase.rpc("insert_note_content", {
     p_note_id: noteId,
     p_content: content,
+    p_source_url: sourceUrl,
     p_content_type: contentType
   })
 }
