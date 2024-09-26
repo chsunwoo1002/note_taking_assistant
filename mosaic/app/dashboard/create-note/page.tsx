@@ -1,21 +1,10 @@
-import { SubmitButton } from "@/components/buttons/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { createNoteAction } from "../note-actions";
+import CreationForm from "./components/creation-form";
 
 export default function CreateNote() {
   return (
-    <div>
-      CreateNote
-      <form>
-        <Label htmlFor="title">Title</Label>
-        <Input name="title" placeholder="Title" required />
-        <Label htmlFor="instruction">Instruction</Label>
-        <Input name="instruction" placeholder="Instruction" />
-        <SubmitButton pendingText="Creating..." formAction={createNoteAction}>
-          Create
-        </SubmitButton>
-      </form>
+    <div className="flex flex-col gap-4 p-4">
+      <h1 className="text-2xl font-bold">Create Note</h1>
+      <CreationForm />
     </div>
   );
 }

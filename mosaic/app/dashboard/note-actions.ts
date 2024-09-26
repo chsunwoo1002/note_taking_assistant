@@ -4,10 +4,10 @@ import { createNoteResult } from "@/lib/openai";
 import { getNoteContents } from "@/utils/supabase/note";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
+import { CreationFormFields } from "./create-note/components/creation-form";
 
-export const createNoteAction = async (formData: FormData) => {
-  const title = formData.get("title")?.toString();
-  const instruction = formData.get("instruction")?.toString();
+export const createNoteAction = async (formData: CreationFormFields) => {
+  const { title, instruction } = formData;
   const supabase = createClient();
 
   if (!title) {
@@ -24,6 +24,8 @@ export const createNoteAction = async (formData: FormData) => {
   }
 
   revalidatePath("/dashboard");
+
+  return { success: true };
 };
 
 export const deleteNoteAction = async (formData: FormData) => {
@@ -58,9 +60,6 @@ export const createNoteResultAction = async (formData: FormData) => {
   // Assuming createNoteResult is a function that returns data with 'contents'
   const { data, error: noteResultError } = await createNoteResult(noteId);
 
-  console.log("data", data);
-  console.log("noteResultError", noteResultError);
-
   if (noteResultError || !data) {
     return {
       error: noteResultError
@@ -77,16 +76,12 @@ export const createNoteResultAction = async (formData: FormData) => {
     return { error: "Contents are required and must be a non-empty array." };
   }
 
-  console.log("contents here", contents);
-
   // Convert 'contents' to JSON string if necessary
   // Supabase client handles JSON conversion, but you can use JSON.stringify(contents) if needed
   const { error: rpcError } = await supabase.rpc("insert_note_results", {
     p_note_id: noteId,
-    contents, // Pass 'contents' directly; Supabase handles JSON conversion
+    contents,
   });
-
-  console.log("rpcError", rpcError);
 
   if (rpcError) {
     return { error: rpcError.message };
@@ -96,4 +91,14 @@ export const createNoteResultAction = async (formData: FormData) => {
   revalidatePath(`/dashboard/${noteId}/results`);
 
   return { success: true };
+};
+
+export const getNoteInfoAction = async (noteId: string) => {
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from("notes")
+    .select("title, instruction, created_at")
+    .eq("id", noteId)
+    .single();
+  return { data, error: error?.message };
 };

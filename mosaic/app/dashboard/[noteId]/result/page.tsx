@@ -13,7 +13,7 @@ import {
   NoteParagraph,
 } from "@/components/typography/note-typography";
 import { Button } from "@/components/ui/button";
-
+import { RotateCw } from "lucide-react";
 export default async function ResultPage({
   params,
 }: {
@@ -28,25 +28,36 @@ export default async function ResultPage({
 
   return (
     <div>
-      <div className="flex gap-4">
-        <Link href={`/dashboard/${noteId}/contents`}>
-          <Button>Contents</Button>
-        </Link>
-        <form action={createNoteResultAction}>
-          <input type="hidden" name="noteId" value={noteId} />
-          <SubmitButton pendingText="Creating Result...">
-            Create Result
-          </SubmitButton>
-        </form>
-      </div>
-      <div>
+      {data.length !== 0 && (
+        <div className="flex gap-4">
+          <form action={createNoteResultAction}>
+            <input type="hidden" name="noteId" value={noteId} />
+            <SubmitButton
+              className="flex flex-row gap-2 justify-center items-center"
+              pendingText="Regenerating Result..."
+            >
+              <RotateCw size={16} />
+              Regenerate
+            </SubmitButton>
+          </form>
+        </div>
+      )}
+      <div className="">
         {data.length === 0 ? (
-          <div>No results</div>
+          <div className="flex flex-col gap-4 justify-center items-center h-full">
+            <div>Your note is not created yet.</div>
+            <form action={createNoteResultAction}>
+              <input type="hidden" name="noteId" value={noteId} />
+              <SubmitButton pendingText="Creating Result...">
+                Create Result
+              </SubmitButton>
+            </form>
+          </div>
         ) : (
           data
             .sort((a, b) => a.order - b.order)
             .map((result) => (
-              <div key={result.id} className="p-4">
+              <div key={result.id} className="py-4">
                 {result.note_type?.type === "heading1" && (
                   <NoteHeading1 text={result.content} />
                 )}
