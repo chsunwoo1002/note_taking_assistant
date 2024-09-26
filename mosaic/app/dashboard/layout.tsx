@@ -1,4 +1,5 @@
 import { Sidebar } from "@/app/dashboard/components/sidebar";
+import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function DashboardLayout({
@@ -7,10 +8,11 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex-1 flex flex-row">
+    <div className="flex-1 flex w-full h-full">
       <Sidebar />
-      <Separator orientation="vertical" className="h-full" />
-      <div className="flex-1 bg-blue-500">{children}</div>
+      <div className="flex-1 overflow-auto p-4">
+        <Card>{children}</Card>
+      </div>
     </div>
   );
 }

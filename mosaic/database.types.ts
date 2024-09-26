@@ -268,6 +268,15 @@ export type Database = {
         };
         Returns: unknown;
       };
+      insert_note_content: {
+        Args: {
+          p_note_id: string;
+          p_content: string;
+          p_source_url: string;
+          p_content_type: string;
+        };
+        Returns: undefined;
+      };
       insert_note_results: {
         Args: {
           p_note_id: string;

@@ -31,8 +31,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider>
-            <main className="min-h-screen w-full flex flex-col items-center gap-10">
-              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16">
+            <main className="min-h-screen w-full flex flex-col items-center">
+              <nav className="w-full flex justify-center border-b border-b-foreground/10 h-16 sticky top-0 z-50 bg-background">
                 <div className="w-full max-w-5xl flex justify-between items-center p-3 px-5 text-sm">
                   <div className="flex gap-5 items-center font-semibold">
                     <Link href={"/"}>Mosaic</Link>
