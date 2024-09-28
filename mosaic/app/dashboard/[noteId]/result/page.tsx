@@ -14,6 +14,8 @@ import {
 } from "@/components/typography/note-typography";
 import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
+import { Popover } from "@radix-ui/react-popover";
+import { PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 export default async function ResultPage({
   params,
 }: {
@@ -21,7 +23,6 @@ export default async function ResultPage({
 }) {
   const { noteId } = params;
   const { data, error } = await getNoteResult(noteId);
-
   if (error || !data) {
     return <div>{error}</div>;
   }
@@ -59,25 +60,109 @@ export default async function ResultPage({
             .map((result) => (
               <div key={result.id} className="py-4">
                 {result.note_type?.type === "heading1" && (
-                  <NoteHeading1 text={result.content} />
+                  <>
+                    <NoteHeading1 text={result.content} />
+                    <div className="flex flex-row gap-2">
+                      {result.content_references.map((reference, index) => (
+                        <Popover key={index}>
+                          <PopoverTrigger>{index + 1}</PopoverTrigger>
+                          <PopoverContent>
+                            {reference.note_contents?.content}
+                          </PopoverContent>
+                        </Popover>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {result.note_type?.type === "heading2" && (
-                  <NoteHeading2 text={result.content} />
+                  <>
+                    <NoteHeading2 text={result.content} />
+                    <div className="flex flex-row gap-2">
+                      {result.content_references.map((reference, index) => (
+                        <Popover key={index}>
+                          <PopoverTrigger>{index + 1}</PopoverTrigger>
+                          <PopoverContent>
+                            {reference.note_contents?.content}
+                          </PopoverContent>
+                        </Popover>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {result.note_type?.type === "heading3" && (
-                  <NoteHeading3 text={result.content} />
+                  <>
+                    <NoteHeading3 text={result.content} />
+                    <div className="flex flex-row gap-2">
+                      {result.content_references.map((reference, index) => (
+                        <Popover key={index}>
+                          <PopoverTrigger>{index + 1}</PopoverTrigger>
+                          <PopoverContent>
+                            {reference.note_contents?.content}
+                          </PopoverContent>
+                        </Popover>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {result.note_type?.type === "heading4" && (
-                  <NoteHeading4 text={result.content} />
+                  <>
+                    <NoteHeading4 text={result.content} />
+                    <div className="flex flex-row gap-2">
+                      {result.content_references.map((reference, index) => (
+                        <Popover key={index}>
+                          <PopoverTrigger>{index + 1}</PopoverTrigger>
+                          <PopoverContent>
+                            {reference.note_contents?.content}
+                          </PopoverContent>
+                        </Popover>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {result.note_type?.type === "heading5" && (
-                  <NoteHeading5 text={result.content} />
+                  <>
+                    <NoteHeading5 text={result.content} />
+                    <div className="flex flex-row gap-2">
+                      {result.content_references.map((reference, index) => (
+                        <Popover key={index}>
+                          <PopoverTrigger>{index + 1}</PopoverTrigger>
+                          <PopoverContent>
+                            {reference.note_contents?.content}
+                          </PopoverContent>
+                        </Popover>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {result.note_type?.type === "heading6" && (
-                  <NoteHeading6 text={result.content} />
+                  <>
+                    <NoteHeading6 text={result.content} />
+                    <div className="flex flex-row gap-2">
+                      {result.content_references.map((reference, index) => (
+                        <Popover key={index}>
+                          <PopoverTrigger>{index + 1}</PopoverTrigger>
+                          <PopoverContent>
+                            {reference.note_contents?.content}
+                          </PopoverContent>
+                        </Popover>
+                      ))}
+                    </div>
+                  </>
                 )}
                 {result.note_type?.type === "paragraph" && (
-                  <NoteParagraph text={result.content} />
+                  <>
+                    <NoteParagraph text={result.content} />
+                    <div className="flex flex-row gap-2">
+                      {result.content_references.map((reference, index) => (
+                        <Popover key={index}>
+                          <PopoverTrigger>{index + 1}</PopoverTrigger>
+                          <PopoverContent>
+                            {reference.note_contents?.content}
+                          </PopoverContent>
+                        </Popover>
+                      ))}
+                    </div>
+                  </>
                 )}
               </div>
             ))

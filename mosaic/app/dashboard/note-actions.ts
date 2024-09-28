@@ -72,7 +72,6 @@ export const createNoteResultAction = async (formData: FormData) => {
 
   // Corrected the conditional check
   if (!contents || !Array.isArray(contents) || contents.length === 0) {
-    console.log("contents", contents);
     return { error: "Contents are required and must be a non-empty array." };
   }
 

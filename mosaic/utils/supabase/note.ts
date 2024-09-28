@@ -50,8 +50,22 @@ export const getNoteResult = async (noteId: string) => {
   const supabase = createClient();
   const { data, error } = await supabase
     .from("note_results")
-    .select("id, content, created_at, order,note_type(type)")
-    .eq("note_id", noteId);
+    .select(
+      `
+      id,
+      content,
+      created_at,
+      order,
+      note_type ( type ),
+      content_references (
+        content_id,
+        note_contents ( content )
+      )
+    `
+    )
+    .eq("note_id", noteId)
+    .order("order");
+
   if (error) {
     return { error: error.message };
   }
