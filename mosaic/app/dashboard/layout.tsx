@@ -1,6 +1,5 @@
 import { Sidebar } from "@/app/dashboard/components/sidebar";
 import { Card } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 
 export default function DashboardLayout({
   children,

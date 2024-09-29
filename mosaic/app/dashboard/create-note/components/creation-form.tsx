@@ -3,7 +3,6 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,8 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { createNoteAction } from "../../note-actions";
-import { SubmitButton } from "@/components/buttons/submit-button";
+import { createNoteAction } from "@/app/actions/note-actions";
 import { FormButton } from "@/components/buttons/form-button";
 
 export const CreationFormSchema = z.object({

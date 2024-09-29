@@ -1,8 +1,6 @@
 import { getNoteResult } from "@/utils/supabase/note";
-import Link from "next/link";
-import { createNoteResultAction } from "../../note-actions";
+import { createNoteResultAction } from "@/app/actions/note-actions";
 import { SubmitButton } from "@/components/buttons/submit-button";
-import { Card } from "@/components/ui/card";
 import {
   NoteHeading1,
   NoteHeading2,
@@ -12,7 +10,6 @@ import {
   NoteHeading6,
   NoteParagraph,
 } from "@/components/typography/note-typography";
-import { Button } from "@/components/ui/button";
 import { RotateCw } from "lucide-react";
 import { Popover } from "@radix-ui/react-popover";
 import { PopoverContent, PopoverTrigger } from "@/components/ui/popover";

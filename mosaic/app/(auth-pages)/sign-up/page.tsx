@@ -1,14 +1,13 @@
 import {
   signUpAction,
   signInWithGoogleAction,
-} from "@/app/(auth-pages)/actions";
+} from "@/app/actions/auth-actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { LabeledIconButton } from "@/components/buttons/labeled-icon-button";
 
 export default function Signup({ searchParams }: { searchParams: Message }) {
   if ("message" in searchParams) {

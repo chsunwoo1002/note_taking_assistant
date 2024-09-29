@@ -1,10 +1,9 @@
 "use server";
 
-import { createNoteResult } from "@/lib/openai";
-import { getNoteContents } from "@/utils/supabase/note";
+import { createNoteResult } from "@/services/openai";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
-import { CreationFormFields } from "./create-note/components/creation-form";
+import { CreationFormFields } from "@/app/dashboard/create-note/components/creation-form";
 
 export const createNoteAction = async (formData: CreationFormFields) => {
   const { title, instruction } = formData;

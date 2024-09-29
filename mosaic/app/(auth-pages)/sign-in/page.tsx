@@ -1,7 +1,7 @@
 import {
   signInAction,
   signInWithGoogleAction,
-} from "@/app/(auth-pages)/actions";
+} from "@/app/actions/auth-actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,7 @@ export default function Login({ searchParams }: { searchParams: Message }) {
       <form className="flex-1 flex flex-col min-w-64">
         <h1 className="text-2xl font-medium">Sign in</h1>
         <p className="text-sm text-foreground">
-          Don't have an account?{" "}
+          {`Don't have an account?`}
           <Link
             className="text-foreground font-medium underline"
             href="/sign-up"
