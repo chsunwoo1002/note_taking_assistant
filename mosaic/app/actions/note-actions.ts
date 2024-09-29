@@ -1,6 +1,6 @@
 "use server";
 
-import { createNoteResult } from "@/lib/openai";
+import { createNoteResult } from "@/services/openai";
 import { getNoteContents } from "@/utils/supabase/note";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
