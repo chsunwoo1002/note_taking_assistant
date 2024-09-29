@@ -19,7 +19,13 @@ export const Header = ({ mode, toggleMode }: HeaderProps) => {
 
   return (
     <div className="flex items-center justify-between p-2 flex-row">
-      <h1 className="text-xl font-semibold">Mosaic</h1>
+      <Button
+        variant="default"
+        onClick={() => {
+          window.open("https://mosaic-note-df4z.vercel.app/", "_blank")
+        }}>
+        <h1 className="text-xl font-semibold">Mosaic</h1>
+      </Button>
       <div className="flex items-center space-x-1">
         <Tooltip>
           <TooltipTrigger>
