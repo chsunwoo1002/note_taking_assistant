@@ -3,7 +3,7 @@ import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
 import { getNoteContents } from "@/utils/supabase/note";
 import { Trash2 } from "lucide-react";
 import Link from "next/link";
-import { deleteNoteAction } from "../../note-actions";
+import { deleteNoteAction } from "@/app/actions/note-actions";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { NoteNavigation } from "@/app/dashboard/[noteId]/components/note-navigation";
-import { getNoteInfoAction } from "../note-actions";
+import { getNoteInfoAction } from "@/app/actions/note-actions";
 
 interface LayoutProps {
   children: React.ReactNode;

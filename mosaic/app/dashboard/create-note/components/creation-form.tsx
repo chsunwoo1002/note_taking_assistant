@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { createNoteAction } from "../../note-actions";
+import { createNoteAction } from "@/app/actions/note-actions";
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { FormButton } from "@/components/buttons/form-button";
 

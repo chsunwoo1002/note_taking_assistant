@@ -1,7 +1,7 @@
 import {
   signInAction,
   signInWithGoogleAction,
-} from "@/app/(auth-pages)/actions";
+} from "@/app/actions/auth-actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { Input } from "@/components/ui/input";

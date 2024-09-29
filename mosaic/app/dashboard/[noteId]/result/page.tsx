@@ -1,6 +1,6 @@
 import { getNoteResult } from "@/utils/supabase/note";
 import Link from "next/link";
-import { createNoteResultAction } from "../../note-actions";
+import { createNoteResultAction } from "@/app/actions/note-actions";
 import { SubmitButton } from "@/components/buttons/submit-button";
 import { Card } from "@/components/ui/card";
 import {
