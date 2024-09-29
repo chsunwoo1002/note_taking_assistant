@@ -59,7 +59,7 @@ export const getNoteResult = async (noteId: string) => {
       note_type ( type ),
       content_references (
         content_id,
-        note_contents ( content )
+        note_contents ( content, source_url )
       )
     `
     )
