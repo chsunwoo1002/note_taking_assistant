@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
-import { LabeledIconButton } from "@/components/buttons/labeled-icon-button";
 
 export default function Signup({ searchParams }: { searchParams: Message }) {
   if ("message" in searchParams) {

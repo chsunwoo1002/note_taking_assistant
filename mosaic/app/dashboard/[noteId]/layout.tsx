@@ -9,11 +9,6 @@ interface LayoutProps {
   params: { noteId: string };
 }
 
-async function fetchNoteTitle(noteId: string) {
-  // Replace with your actual data fetching logic
-  return `Note Title for ${noteId}`;
-}
-
 export default async function NoteLayout({ children, params }: LayoutProps) {
   const { data, error } = await getNoteInfoAction(params.noteId);
 

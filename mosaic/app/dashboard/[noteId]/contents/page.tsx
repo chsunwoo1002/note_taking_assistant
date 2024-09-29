@@ -1,11 +1,8 @@
-import { IconButton } from "@/components/buttons/icon-button";
-import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { getNoteContents } from "@/utils/supabase/note";
-import { Trash2 } from "lucide-react";
 import Link from "next/link";
 import { deleteNoteAction } from "@/app/actions/note-actions";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default async function ContentsPage({
   params,

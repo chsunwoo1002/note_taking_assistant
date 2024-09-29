@@ -1,7 +1,6 @@
 "use client";
 
 import { Button, ButtonProps } from "@/components/ui/button";
-import { LucideIcon } from "lucide-react";
 import withTooltip from "@/components/hoc/withTooltip";
 
 interface IconButtonProps extends Omit<ButtonProps, "children" | "size"> {

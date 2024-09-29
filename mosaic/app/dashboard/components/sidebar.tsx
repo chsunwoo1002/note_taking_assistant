@@ -8,7 +8,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { getNotes } from "@/utils/supabase/note";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
 import Link from "next/link";
 
 export async function Sidebar() {
