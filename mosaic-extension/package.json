@@ -45,6 +45,10 @@
   },
   "manifest": {
     "key": "$CRX_KEY",
+    "permissions": [
+      "contextMenus",
+      "storage"
+    ],
     "host_permissions": [
       "https://*/*"
     ],
