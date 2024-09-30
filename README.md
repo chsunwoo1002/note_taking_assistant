@@ -8,7 +8,7 @@ Automate your note-taking process by collecting text segments from websites thro
 
 ## Overview
 
-Mosaic is a productivity tool designed to streamline the way you take notes from the web. With Chrome extension, you can effortlessly capture text segments from any website. All your collected notes are synced and accessible through the web application, allowing you to organize and create a complete note.
+Mosaic is a productivity tool designed to streamline the way you take notes from the web. With Chrome extension, you can effortlessly capture text segments and images from any website. All your collected notes are synced and accessible through the web application, allowing you to organize and create a complete note.
 
 ## Features
 
