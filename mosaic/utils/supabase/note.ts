@@ -43,7 +43,19 @@ export const getNoteContents = async (noteId: string) => {
     return { error: error.message };
   }
 
-  return { data };
+  const newData = await Promise.all(
+    data.map(async (content) => {
+      if (content.file_url && content.content_types?.type === "image") {
+        const { data } = await supabase.storage
+          .from("note-images")
+          .createSignedUrl(content.file_url, 60 * 60 * 24);
+        return { ...content, signedUrl: data?.signedUrl ?? null };
+      }
+      return { ...content, signedUrl: null };
+    })
+  );
+
+  return { data: newData };
 };
 
 export const getNoteResult = async (noteId: string) => {

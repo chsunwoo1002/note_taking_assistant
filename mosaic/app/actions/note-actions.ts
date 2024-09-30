@@ -29,6 +29,7 @@ export const createNoteAction = async (formData: CreationFormFields) => {
 
 export const deleteNoteAction = async (formData: FormData) => {
   const contentId = formData.get("contentId")?.toString();
+  const fileUrl = formData.get("fileUrl")?.toString();
   const noteId = formData.get("noteId")?.toString();
   const supabase = createClient();
 
@@ -43,6 +44,15 @@ export const deleteNoteAction = async (formData: FormData) => {
 
   if (error) {
     return { error: error.message };
+  }
+
+  if (fileUrl) {
+    const { error: storageError } = await supabase.storage
+      .from("note-images")
+      .remove([fileUrl]);
+    if (storageError) {
+      return { error: storageError.message };
+    }
   }
 
   revalidatePath(`/dashboard/${noteId}/contents`);
