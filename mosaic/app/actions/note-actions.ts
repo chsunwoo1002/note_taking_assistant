@@ -4,14 +4,22 @@ import { createNoteResult } from "@/services/openai";
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { CreationFormFields } from "@/app/dashboard/create-note/components/creation-form";
+import {
+  createNoteResultSchema,
+  createNoteSchema,
+  deleteNoteSchema,
+  getNoteInfoSchema,
+} from "@/utils/schema";
 
 export const createNoteAction = async (formData: CreationFormFields) => {
-  const { title, instruction } = formData;
-  const supabase = createClient();
+  const createNoteData = createNoteSchema.safeParse(formData);
 
-  if (!title) {
-    return { error: "Title is required" };
+  if (!createNoteData.success) {
+    return { error: createNoteData.error.message };
   }
+
+  const supabase = createClient();
+  const { title, instruction } = createNoteData.data;
 
   const { error } = await supabase.from("notes").insert({
     title,
@@ -28,14 +36,18 @@ export const createNoteAction = async (formData: CreationFormFields) => {
 };
 
 export const deleteNoteAction = async (formData: FormData) => {
-  const contentId = formData.get("contentId")?.toString();
-  const fileUrl = formData.get("fileUrl")?.toString();
-  const noteId = formData.get("noteId")?.toString();
-  const supabase = createClient();
+  const deleteNoteData = deleteNoteSchema.safeParse({
+    contentId: formData.get("contentId"),
+    fileUrl: formData.get("fileUrl"),
+    noteId: formData.get("noteId"),
+  });
 
-  if (!contentId || !noteId) {
-    return { error: "Content ID is required" };
+  if (!deleteNoteData.success) {
+    return { error: deleteNoteData.error.message };
   }
+
+  const supabase = createClient();
+  const { contentId, fileUrl, noteId } = deleteNoteData.data;
 
   const { error } = await supabase
     .from("note_contents")
@@ -59,33 +71,30 @@ export const deleteNoteAction = async (formData: FormData) => {
 };
 
 export const createNoteResultAction = async (formData: FormData) => {
-  const noteId = formData.get("noteId")?.toString();
-  const supabase = createClient();
+  const createNoteResultData = createNoteResultSchema.safeParse({
+    noteId: formData.get("noteId"),
+  });
 
-  if (!noteId) {
-    return { error: "Note ID is required" };
+  if (!createNoteResultData.success) {
+    return { error: createNoteResultData.error.message };
   }
+  const { noteId } = createNoteResultData.data;
 
-  // Assuming createNoteResult is a function that returns data with 'contents'
   const { data, error: noteResultError } = await createNoteResult(noteId);
 
   if (noteResultError || !data) {
     return {
-      error: noteResultError
-        ? noteResultError
-        : "Failed to fetch note result data.",
+      error: noteResultError || "Failed to fetch note result data.",
     };
   }
 
-  const contents = data.contents;
+  const { contents } = data;
 
-  // Corrected the conditional check
   if (!contents || !Array.isArray(contents) || contents.length === 0) {
     return { error: "Contents are required and must be a non-empty array." };
   }
 
-  // Convert 'contents' to JSON string if necessary
-  // Supabase client handles JSON conversion, but you can use JSON.stringify(contents) if needed
+  const supabase = createClient();
   const { error: rpcError } = await supabase.rpc("insert_note_results", {
     p_note_id: noteId,
     contents,
@@ -95,18 +104,24 @@ export const createNoteResultAction = async (formData: FormData) => {
     return { error: rpcError.message };
   }
 
-  // Revalidate the path if using Next.js or similar framework
   revalidatePath(`/dashboard/${noteId}/results`);
 
   return { success: true };
 };
 
 export const getNoteInfoAction = async (noteId: string) => {
+  const getNoteInfoData = getNoteInfoSchema.safeParse({ noteId });
+
+  if (!getNoteInfoData.success) {
+    return { error: getNoteInfoData.error.message };
+  }
+
   const supabase = createClient();
   const { data, error } = await supabase
     .from("notes")
     .select("title, instruction, created_at")
-    .eq("id", noteId)
+    .eq("id", getNoteInfoData.data.noteId)
     .single();
+
   return { data, error: error?.message };
 };
