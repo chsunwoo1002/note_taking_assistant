@@ -5,29 +5,39 @@ const instructionSchema = z.string().optional();
 const noteIdSchema = z.string().uuid();
 const fileUrlSchema = z.string().optional();
 const contentIdSchema = z.string().uuid();
-
-const createNoteSchema = z.object({
+const createdAtSchema = z.string();
+const createNoteActionSchema = z.object({
   title: titleSchema,
   instruction: instructionSchema,
 });
 
-const deleteNoteSchema = z.object({
+const deleteNoteActionSchema = z.object({
   contentId: contentIdSchema,
   fileUrl: fileUrlSchema,
   noteId: noteIdSchema,
 });
 
-const createNoteResultSchema = z.object({
+const createNoteResultActionSchema = z.object({
   noteId: noteIdSchema,
 });
 
-const getNoteInfoSchema = z.object({
+const getNoteInfoActionSchema = z.object({
   noteId: noteIdSchema,
 });
 
+const getNoteInfoQuerySchema = z.object({
+  title: titleSchema,
+  instruction: instructionSchema,
+  created_at: createdAtSchema,
+});
+
+type NoteInfo = z.infer<typeof getNoteInfoQuerySchema>;
+
+export type { NoteInfo };
 export {
-  createNoteSchema,
-  deleteNoteSchema,
-  createNoteResultSchema,
-  getNoteInfoSchema,
+  createNoteActionSchema,
+  deleteNoteActionSchema,
+  createNoteResultActionSchema,
+  getNoteInfoActionSchema,
+  getNoteInfoQuerySchema,
 };
