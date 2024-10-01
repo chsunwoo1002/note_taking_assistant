@@ -10,12 +10,11 @@ interface LayoutProps {
 }
 
 export default async function NoteLayout({ children, params }: LayoutProps) {
-  const { data, error } = await getNoteInfoAction(params.noteId);
+  const { success, data, error } = await getNoteInfoAction(params.noteId);
 
-  if (error || !data) {
+  if (!success) {
     return <div>{error}</div>;
   }
-
   return (
     <div className="p-4 h-full">
       <h1 className="text-2xl font-bold mb-4">{data.title}</h1>
