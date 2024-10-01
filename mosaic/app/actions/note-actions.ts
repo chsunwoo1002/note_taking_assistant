@@ -5,17 +5,20 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { CreationFormFields } from "@/app/dashboard/create-note/components/creation-form";
 import {
-  createNoteResultSchema,
-  createNoteSchema,
-  deleteNoteSchema,
-  getNoteInfoSchema,
+  createNoteResultActionSchema,
+  createNoteActionSchema,
+  deleteNoteActionSchema,
+  getNoteInfoActionSchema,
+  getNoteInfoQuerySchema,
+  NoteInfo,
 } from "@/utils/schema";
+import { ActionResponse, createActionResponse } from "@/utils/action-response";
 
 export const createNoteAction = async (formData: CreationFormFields) => {
-  const createNoteData = createNoteSchema.safeParse(formData);
+  const createNoteData = createNoteActionSchema.safeParse(formData);
 
   if (!createNoteData.success) {
-    return { error: createNoteData.error.message };
+    return createActionResponse({ error: createNoteData.error.message });
   }
 
   const supabase = createClient();
@@ -27,23 +30,23 @@ export const createNoteAction = async (formData: CreationFormFields) => {
   });
 
   if (error) {
-    return { error: error.message };
+    return createActionResponse({ error: error.message });
   }
 
   revalidatePath("/dashboard");
 
-  return { success: true };
+  return createActionResponse({ data: null });
 };
 
 export const deleteNoteAction = async (formData: FormData) => {
-  const deleteNoteData = deleteNoteSchema.safeParse({
+  const deleteNoteData = deleteNoteActionSchema.safeParse({
     contentId: formData.get("contentId"),
     fileUrl: formData.get("fileUrl"),
     noteId: formData.get("noteId"),
   });
 
   if (!deleteNoteData.success) {
-    return { error: deleteNoteData.error.message };
+    return createActionResponse({ error: deleteNoteData.error.message });
   }
 
   const supabase = createClient();
@@ -55,7 +58,7 @@ export const deleteNoteAction = async (formData: FormData) => {
     .eq("id", contentId);
 
   if (error) {
-    return { error: error.message };
+    return createActionResponse({ error: error.message });
   }
 
   if (fileUrl) {
@@ -63,35 +66,39 @@ export const deleteNoteAction = async (formData: FormData) => {
       .from("note-images")
       .remove([fileUrl]);
     if (storageError) {
-      return { error: storageError.message };
+      return createActionResponse({ error: storageError.message });
     }
   }
 
   revalidatePath(`/dashboard/${noteId}/contents`);
+
+  return createActionResponse({ data: null });
 };
 
 export const createNoteResultAction = async (formData: FormData) => {
-  const createNoteResultData = createNoteResultSchema.safeParse({
+  const createNoteResultData = createNoteResultActionSchema.safeParse({
     noteId: formData.get("noteId"),
   });
 
   if (!createNoteResultData.success) {
-    return { error: createNoteResultData.error.message };
+    return createActionResponse({ error: createNoteResultData.error.message });
   }
   const { noteId } = createNoteResultData.data;
 
   const { data, error: noteResultError } = await createNoteResult(noteId);
 
   if (noteResultError || !data) {
-    return {
+    return createActionResponse({
       error: noteResultError || "Failed to fetch note result data.",
-    };
+    });
   }
 
   const { contents } = data;
 
   if (!contents || !Array.isArray(contents) || contents.length === 0) {
-    return { error: "Contents are required and must be a non-empty array." };
+    return createActionResponse({
+      error: "Contents are required and must be a non-empty array.",
+    });
   }
 
   const supabase = createClient();
@@ -101,19 +108,21 @@ export const createNoteResultAction = async (formData: FormData) => {
   });
 
   if (rpcError) {
-    return { error: rpcError.message };
+    return createActionResponse({ error: rpcError.message });
   }
 
   revalidatePath(`/dashboard/${noteId}/results`);
 
-  return { success: true };
+  return createActionResponse({ data: null });
 };
 
-export const getNoteInfoAction = async (noteId: string) => {
-  const getNoteInfoData = getNoteInfoSchema.safeParse({ noteId });
+export const getNoteInfoAction = async (
+  noteId: string
+): Promise<ActionResponse<NoteInfo>> => {
+  const getNoteInfoData = getNoteInfoActionSchema.safeParse({ noteId });
 
   if (!getNoteInfoData.success) {
-    return { error: getNoteInfoData.error.message };
+    return createActionResponse({ error: getNoteInfoData.error.message });
   }
 
   const supabase = createClient();
@@ -123,5 +132,15 @@ export const getNoteInfoAction = async (noteId: string) => {
     .eq("id", getNoteInfoData.data.noteId)
     .single();
 
-  return { data, error: error?.message };
+  if (error) {
+    return createActionResponse({ error: error.message });
+  }
+
+  const parsedData = getNoteInfoQuerySchema.safeParse(data);
+
+  if (!parsedData.success) {
+    return createActionResponse({ error: parsedData.error.message });
+  }
+
+  return createActionResponse({ data: parsedData.data });
 };
