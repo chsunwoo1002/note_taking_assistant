@@ -4,6 +4,7 @@ import { getNote, getNoteContents } from "@/utils/supabase/note";
 import OpenAI from "openai";
 import { z } from "zod";
 import { zodResponseFormat } from "openai/helpers/zod";
+import { contentIdsSchema } from "@/utils/schema";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
@@ -44,14 +45,15 @@ export const generateNoteResult = async (
   instruction: string | null,
   contents: { content: string | null; contentId: string }[]
 ) => {
-  const contentIds = contents.map((content) => content.contentId) as [
-    string,
-    ...string[],
-  ];
+  const contentIdsData = contentIdsSchema.safeParse(
+    contents.map((content) => content.contentId)
+  );
 
-  if (contentIds.length === 0) {
-    return { error: "No content" };
+  if (!contentIdsData.success) {
+    return { error: contentIdsData.error.message };
   }
+
+  const contentIds = contentIdsData.data;
 
   const generatedNoteSchema = z.object({
     contents: z.array(
