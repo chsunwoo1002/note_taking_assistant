@@ -2,7 +2,6 @@
 
 import { encodedRedirect } from "@/utils/utils";
 import { createClient } from "@/utils/supabase/server";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { APP_URL } from "@/utils/constants";
 import {
@@ -23,13 +22,12 @@ export const signUpAction = async (formData: FormData) => {
   }
 
   const supabase = createClient();
-  const origin = headers().get("origin");
 
   const { error } = await supabase.auth.signUp({
     email: signUpData.data.email,
     password: signUpData.data.password,
     options: {
-      emailRedirectTo: `${origin}/auth/callback`,
+      emailRedirectTo: `${APP_URL}/auth/callback`,
     },
   });
 
@@ -104,12 +102,11 @@ export const forgotPasswordAction = async (formData: FormData) => {
   }
 
   const supabase = createClient();
-  const origin = headers().get("origin");
 
   const { error } = await supabase.auth.resetPasswordForEmail(
     forgotPasswordData.data.email,
     {
-      redirectTo: `${origin}/auth/callback?redirect_to=/dashboard/reset-password`,
+      redirectTo: `${APP_URL}/auth/callback?redirect_to=/dashboard/reset-password`,
     }
   );
 
